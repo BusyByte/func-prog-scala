@@ -66,6 +66,9 @@ object List {
   def product4(as : List[Double]): Double = foldLeft(as, 1.0)(_ * _)
   def length2[A](as: List[A]): Int = foldLeft(as, 0)((acc,elem)=>acc+1)
 
+  def reverse[A](as: List[A]): List[A] =
+    foldLeft(as, Nil:List[A])((acc,elem) => Cons(elem, acc))
+
   def length[A](as: List[A]): Int = foldRight(as, 0)((elem,acc)=>acc+1)
 
   def sum2(ns: List[Int]) =

@@ -73,4 +73,8 @@ class ListTest extends FunSuite with Matchers {
   test("exercise 3.11, implement length with foldLeft") {
     length2(List(1,2,3,4)) should be(4)
   }
+
+  test("exercise 3.11, implement reverse") {
+    reverse(List(1,2,3)) should be(List(3,2,1))
+  }
 }

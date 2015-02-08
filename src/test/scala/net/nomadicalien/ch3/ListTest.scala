@@ -54,6 +54,10 @@ class ListTest extends FunSuite with Matchers {
     foldRight(List(1,2,3), Nil:List[Int])(Cons(_,_)) should be(List(1,2,3))
   }
 
+  test("exercise 3.9, length with fold right") {
+    List.length(List(1,2,3)) should be(3)
+  }
+
 
 
 }

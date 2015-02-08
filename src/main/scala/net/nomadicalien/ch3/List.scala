@@ -54,6 +54,8 @@ object List {
       case Cons(x, xs) => f(x, foldRight(xs, z)(f))
     }
 
+  def length[A](as: List[A]): Int = foldRight(as, 0)((elem,acc)=>acc+1)
+
   def sum2(ns: List[Int]) =
     foldRight(ns, 0)((x,y) => x + y)
 

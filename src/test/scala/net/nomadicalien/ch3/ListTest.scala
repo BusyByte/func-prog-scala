@@ -58,6 +58,10 @@ class ListTest extends FunSuite with Matchers {
     List.length(List(1,2,3)) should be(3)
   }
 
+  test("exercise 3.10, implement stack-safe foldLight") {
+    foldLeft[Int,Int](List(1,2,3),0)((acc, elem)=> acc + elem) should be(6)
+  }
+
 
 
 }

@@ -44,5 +44,10 @@ class ListTest extends FunSuite with Matchers {
     val x = List(1,2,3,4)
     init(x) should be(List(1,2,3))
   }
+  
+  test("exercise 3.7, implement product as fold right with short circuit") {
+    val x = List(1.0,2.0,0.0,4.0)
+    product3(x) should be(0.0)//only evaluates multiply function 2 times instead of 4
+  }
 
 }

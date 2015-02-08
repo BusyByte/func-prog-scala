@@ -62,6 +62,15 @@ class ListTest extends FunSuite with Matchers {
     foldLeft[Int,Int](List(1,2,3),0)((acc, elem)=> acc + elem) should be(6)
   }
 
+  test("exercise 3.11, implement sum with foldLeft") {
+    sum3(List(1,2,3,4)) should be(10)
+  }
 
+  test("exercise 3.11, implement product with foldLeft") {
+    product4(List(1.0,2.0,3.0,4.0)) should be(24.0)
+  }
 
+  test("exercise 3.11, implement length with foldLeft") {
+    length2(List(1,2,3,4)) should be(4)
+  }
 }

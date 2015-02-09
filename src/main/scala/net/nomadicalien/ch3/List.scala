@@ -11,6 +11,19 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
  * Created by Shawn on 2/8/2015.
  */
 object List {
+
+  def zipWith[A,B,C](l1: List[A], l2: List[B])(f: (A,B)=>C): List[C] = (l1, l2) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(x1,xs1), Cons(x2,xs2)) => Cons(f(x1,x2), zipWith(xs1,xs2)(f))
+  }
+
+  def addTogether(list1: List[Int], list2: List[Int]): List[Int] = (list1, list2) match {
+    case (Nil,_) => Nil
+    case (_,Nil) => Nil
+    case (Cons(x1,xs1), Cons(x2, xs2)) => Cons(x1 + x2, addTogether(xs1, xs2))
+  }
+
   def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] = {
     foldRight(as, Nil:List[B])((a,b)=> foldRight(f(a),b)((a,b)=> Cons(a,b)))
   }

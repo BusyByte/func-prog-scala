@@ -74,7 +74,22 @@ class ListTest extends FunSuite with Matchers {
     length2(List(1,2,3,4)) should be(4)
   }
 
-  test("exercise 3.11, implement reverse") {
+  test("exercise 3.12, implement reverse") {
     reverse(List(1,2,3)) should be(List(3,2,1))
+  }
+
+  test("exercise 3.13 implement foldLeft in terms of foldRight") {
+    //since functions evaluate arguments first each function composition causes the reversing of given order
+    foldLeft2(List(1,2,3),0)((b,a)=> {
+      //println(s"$a")
+      a + b
+    } ) should be(6)
+  }
+
+  test("exercise 3.13 implement foldRight in terms of foldLeft") {
+    foldRight2(List(1,2,3),0)((a,b)=> {
+      //println(s"$a")
+      a + b
+    } ) should be(6)
   }
 }

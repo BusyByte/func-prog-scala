@@ -62,6 +62,13 @@ object List {
     case Cons(x, xs) => foldLeft(xs, f(z,x))(f)
   }
 
+  def foldLeft2[A,B](as: List[A], z: B)(f: (B, A) => B): B =
+    foldRight(as, (b:B) => b)((a,g) => b => g(f(b,a)))(z)
+
+  def foldRight2[A,B](as: List[A], z: B)(f: (A,B) => B): B =
+    foldLeft(as, (b:B) => b)((g,a) => b => g(f(a,b)))(z)
+
+
   def sum3(as: List[Int]): Int = foldLeft(as, 0)(_ + _)
   def product4(as : List[Double]): Double = foldLeft(as, 1.0)(_ * _)
   def length2[A](as: List[A]): Int = foldLeft(as, 0)((acc,elem)=>acc+1)

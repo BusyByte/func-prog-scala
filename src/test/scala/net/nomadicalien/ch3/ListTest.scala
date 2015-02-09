@@ -92,4 +92,10 @@ class ListTest extends FunSuite with Matchers {
       a + b
     } ) should be(6)
   }
+
+  test("exercise 3.14 implement append in terms of a fold") {
+    append(List(1,2,3),4) should be(List(1,2,3,4))
+  }
+
+
 }

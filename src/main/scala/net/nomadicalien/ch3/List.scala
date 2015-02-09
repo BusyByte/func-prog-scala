@@ -11,6 +11,15 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
  * Created by Shawn on 2/8/2015.
  */
 object List {
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = {
+    foldRight(as, Nil:List[A])((a:A,b:List[A]) => {
+      if(f(a))
+        Cons(a, b)
+      else
+        b
+    })
+  }
+
   def map[A,B](as: List[A])(f: A => B): List[B] = {
     foldRight(as, Nil:List[B])((a:A,b:List[B]) => Cons(f(a), b))
   }

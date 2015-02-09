@@ -117,4 +117,8 @@ class ListTest extends FunSuite with Matchers {
   test("exercise 3.18 implement map function") {
     map(List(2.0,8.0,10.0))(_.toString) should be(List("2.0","8.0","10.0"))
   }
+
+  test("exercise 3.19 implement filter function") {
+    filter(List(1,2,3,4,5,6,7,8,9))(_%2==0) should be(List(2,4,6,8))
+  }
 }

@@ -106,7 +106,7 @@ class ListTest extends FunSuite with Matchers {
     concat(listOfLists) should be(List(9,8,7,6,5,4,3,2,1))
   }
 
-
-
-
+  test("exercise 3.16 implement function which adds 1") {
+    add1(List(2,8,10)) should be(List(3,9,11))
+  }
 }

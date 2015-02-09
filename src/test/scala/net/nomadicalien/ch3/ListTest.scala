@@ -121,4 +121,12 @@ class ListTest extends FunSuite with Matchers {
   test("exercise 3.19 implement filter function") {
     filter(List(1,2,3,4,5,6,7,8,9))(_%2==0) should be(List(2,4,6,8))
   }
+
+  test("exercise 3.20 implement flatmap") {
+    flatMap(List(1,2,3))(i=>List(i,i)) should be(List(1,1,2,2,3,3))
+  }
+
+  test("exercise 3.21 implement filter with flatMap") {
+    filter2(List(1,2,3,4,5,6,7,8,9))(_%2==0) should be(List(2,4,6,8))
+  }
 }

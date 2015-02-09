@@ -12,6 +12,10 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
  */
 object List {
 
+  def concat[A](as: List[List[A]]):List[A] = {
+    foldLeft(as, Nil:List[A])((b,a) => foldLeft(a,b)((b,a)=>Cons(a,b)))
+  }
+
   def append[A](as: List[A], elem:A): List[A] = {
     foldRight(as, Cons(elem, Nil))(Cons(_,_))
   }

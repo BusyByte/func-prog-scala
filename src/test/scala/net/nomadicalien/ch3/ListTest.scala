@@ -97,5 +97,16 @@ class ListTest extends FunSuite with Matchers {
     append(List(1,2,3),4) should be(List(1,2,3,4))
   }
 
+  test("exercise 3.15 implement append in terms of a fold") {
+    val listOfLists = List(
+    List(1,2,3),
+    List(4,5,6),
+    List(7,8,9)
+    )
+    concat(listOfLists) should be(List(9,8,7,6,5,4,3,2,1))
+  }
+
+
+
 
 }

@@ -113,4 +113,8 @@ class ListTest extends FunSuite with Matchers {
   test("exercise 3.17 implement function which converts double to string") {
     dToString(List(2.0,8.0,10.0)) should be(List("2.0","8.0","10.0"))
   }
+
+  test("exercise 3.18 implement map function") {
+    map(List(2.0,8.0,10.0))(_.toString) should be(List("2.0","8.0","10.0"))
+  }
 }

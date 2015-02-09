@@ -11,6 +11,9 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
  * Created by Shawn on 2/8/2015.
  */
 object List {
+  def map[A,B](as: List[A])(f: A => B): List[B] = {
+    foldRight(as, Nil:List[B])((a:A,b:List[B]) => Cons(f(a), b))
+  }
 
   def dToString(as: List[Double]):List[String] = {
     foldRight(as, Nil:List[String])((a:Double,b:List[String]) => Cons(a.toString, b))

@@ -12,6 +12,10 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
  */
 object List {
 
+  def dToString(as: List[Double]):List[String] = {
+    foldRight(as, Nil:List[String])((a:Double,b:List[String]) => Cons(a.toString, b))
+  }
+
   def add1(as: List[Int]):List[Int] = {
     foldRight(as, Nil:List[Int])((a:Int,b:List[Int]) => Cons(a + 1, b))
   }

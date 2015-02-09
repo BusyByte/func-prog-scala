@@ -109,4 +109,8 @@ class ListTest extends FunSuite with Matchers {
   test("exercise 3.16 implement function which adds 1") {
     add1(List(2,8,10)) should be(List(3,9,11))
   }
+
+  test("exercise 3.17 implement function which converts double to string") {
+    dToString(List(2.0,8.0,10.0)) should be(List("2.0","8.0","10.0"))
+  }
 }

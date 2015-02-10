@@ -12,6 +12,14 @@ case class Cons[+A](head: A, tail: List[A]) extends List[A]
  */
 object List {
 
+  @tailrec
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = (sup, sub) match {
+    case (_, Nil) => true
+    case (Nil, _) => false
+    case (Cons(x1,xs1), Cons(x2,xs2)) if x1 == x2 => hasSubsequence(xs1, xs2)
+    case (Cons(x1,xs1), s) => hasSubsequence(xs1, s)
+  }
+
   def zipWith[A,B,C](l1: List[A], l2: List[B])(f: (A,B)=>C): List[C] = (l1, l2) match {
     case (Nil, _) => Nil
     case (_, Nil) => Nil

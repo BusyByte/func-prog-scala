@@ -17,7 +17,13 @@ class TreeTest extends FunSuite with Matchers {
     maximum(Branch(Leaf(1),Branch(Leaf(2),Leaf(3)))) should be(3)
   }
 
-  test("exercise 3.26, depth of tree") {
+  test("exercise 3.27, depth of tree") {
     depth(Branch(Leaf(1),Branch(Leaf(2),Leaf(3)))) should be(3)
+  }
+
+  test("exercise 3.28, implement map on tree") {
+    map(Branch(Leaf(1),Branch(Leaf(2),Leaf(3))))((a:Int) => a.toString) should be(
+    Branch(Leaf("1"), Branch(Leaf("2"),Leaf("3")))
+    )
   }
 }

@@ -12,4 +12,12 @@ class TreeTest extends FunSuite with Matchers {
     Tree.size(Branch(Leaf("a"),Leaf("b"))) should be(3)
     Tree.size(Branch(Leaf("a"),Branch(Leaf("b"),Leaf("c")))) should be(5)
   }
+
+  test("exercise 3.26, max of tree") {
+    maximum(Branch(Leaf(1),Branch(Leaf(2),Leaf(3)))) should be(3)
+  }
+
+  test("exercise 3.26, depth of tree") {
+    depth(Branch(Leaf(1),Branch(Leaf(2),Leaf(3)))) should be(3)
+  }
 }

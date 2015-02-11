@@ -26,4 +26,23 @@ class TreeTest extends FunSuite with Matchers {
     Branch(Leaf("1"), Branch(Leaf("2"),Leaf("3")))
     )
   }
+
+  test("exercise 3.29, size of tree via fold") {
+    size2(Branch(Leaf("a"),Leaf("b"))) should be(3)
+    size2(Branch(Leaf("a"),Branch(Leaf("b"),Leaf("c")))) should be(5)
+  }
+
+  test("exercise 3.29, max of tree via fold") {
+    maximum2(Branch(Leaf(1),Branch(Leaf(2),Leaf(3)))) should be(3)
+  }
+
+  test("exercise 3.29, depth of tree via fold") {
+    depth2(Branch(Leaf(1),Branch(Leaf(2),Leaf(3)))) should be(3)
+  }
+
+  test("exercise 3.29, implement map on tree via fold") {
+    map2(Branch(Leaf(1),Branch(Leaf(2),Leaf(3))))((a:Int) => a.toString) should be(
+      Branch(Leaf("1"), Branch(Leaf("2"),Leaf("3")))
+    )
+  }
 }

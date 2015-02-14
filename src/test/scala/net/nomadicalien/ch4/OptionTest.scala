@@ -37,4 +37,16 @@ class OptionTest extends FunSuite with Matchers {
     None.asInstanceOf[Option[String]].filter(bobFilter) should be(None)
   }
 
+  import Option._
+  test("exercise 4.3, map via option - Some") {
+    val aMaybe = Some(1)
+    val bMaybe = Some(2)
+    map2(aMaybe,bMaybe)(_ + _) should be (Some(3))
+  }
+  
+  test("exercise 4.3, map via option - None") {
+    val aMaybe = None : Option[Int]
+    val bMaybe = Some(2)
+    map2(aMaybe,bMaybe)(_ + _) should be (None)
+  }
 }

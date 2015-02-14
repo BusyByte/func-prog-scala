@@ -43,10 +43,37 @@ class OptionTest extends FunSuite with Matchers {
     val bMaybe = Some(2)
     map2(aMaybe,bMaybe)(_ + _) should be (Some(3))
   }
-  
+
   test("exercise 4.3, map via option - None") {
     val aMaybe = None : Option[Int]
     val bMaybe = Some(2)
     map2(aMaybe,bMaybe)(_ + _) should be (None)
   }
+
+  test("exercise 4.4, sequence - Some") {
+    sequence(List(Some(1),Some(2))) should be (Some(List(1,2)))
+  }
+
+  test("exercise 4.4, sequence - None") {
+    sequence(List(Some(1), None: Option[Int], Some(2))) should be (None)
+  }
+
+  test("exercise 4.4, traverse - Some") {
+    traverse(List(1,2,3))(Some(_)) should be(Some(List(1,2,3)))
+  }
+
+  test("exercise 4.4, traverse - None") {
+    traverse(List(1,2,3))(a => None : Option[Int]) should be(None)
+  }
+
+  test("exercise 4.5, sequence via traverse - Some") {
+    sequence2(List(Some(1),Some(2))) should be (Some(List(1,2)))
+  }
+
+  test("exercise 4.5, sequence via travers - None") {
+    sequence2(List(Some(1), None: Option[Int], Some(2))) should be (None)
+  }
+
+
+
 }

@@ -40,4 +40,12 @@ class StreamTest extends FunSuite with Matchers {
   test("exercise 5.5, dropWhile via foldRight") {
     Stream(1, 2, 3, 4).takeWhile2(_ <= 3).toList should be(List(1, 2, 3))
   }
+
+  test("exercise 5.6, headOption via foldRight - Some") {
+    Stream(1, 2, 3, 4).headOption2 should be(Some(1))
+  }
+
+  test("exercise 5.6, headOption via foldRight - None") {
+    Empty.headOption2 should be(None)
+  }
 }

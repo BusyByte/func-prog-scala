@@ -1,5 +1,7 @@
 package net.nomadicalien.ch5
 
+import scala.annotation.tailrec
+
 /**
  * Created by Shawn on 2/19/2015.
  */
@@ -25,7 +27,12 @@ sealed trait Stream[+A]{
     case _ => Empty
   }
 
+  def takeWhile(p: A => Boolean): Stream[A] = this match {
+    case Cons(h, t) if p(h()) => Cons(h, () => t().takeWhile(p))
+    case _ => Empty
+  }
 }
+
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
 object Stream {

@@ -19,4 +19,8 @@ class StreamTest  extends FunSuite with Matchers {
   test("exercise 5.2, drop") {
     Stream(1,2,3,4).drop(2).toList should be(List(3,4))
   }
+
+  test("exercise 5.3, dropWhile") {
+    Stream(1,2,3,4).takeWhile(_  <= 3).toList should be(List(1,2,3))
+  }
 }

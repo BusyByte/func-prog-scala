@@ -64,4 +64,9 @@ class StreamTest extends FunSuite with Matchers {
   test("exercise 5.7, flatMap via foldRight") {
     Stream(1,2,3,4).flatMap(e => Stream(e *2, e * 3)).toList should be(List(2,3,4,6,6,9,8,12))
   }
+
+  test("exercise 5.8, constant") {
+    import Stream._
+    constant(40).take(4).toList should be(List(40,40,40,40))
+  }
 }

@@ -50,23 +50,28 @@ class StreamTest extends FunSuite with Matchers {
   }
 
   test("exercise 5.7, map via foldRight") {
-    Stream(1,2,3,4).map(_ * 2).toList should be(List(2,4,6,8))
+    Stream(1, 2, 3, 4).map(_ * 2).toList should be(List(2, 4, 6, 8))
   }
 
   test("exercise 5.7, filter via foldRight") {
-    Stream(1,2,3,4).filter(_ % 2 == 0).toList should be(List(2,4))
+    Stream(1, 2, 3, 4).filter(_ % 2 == 0).toList should be(List(2, 4))
   }
 
   test("exercise 5.7, append via foldRight") {
-    Stream(1,2,3,4).append(Stream(5)).toList should be(List(1,2,3,4,5))
+    Stream(1, 2, 3, 4).append(Stream(5)).toList should be(List(1, 2, 3, 4, 5))
   }
 
   test("exercise 5.7, flatMap via foldRight") {
-    Stream(1,2,3,4).flatMap(e => Stream(e *2, e * 3)).toList should be(List(2,3,4,6,6,9,8,12))
+    Stream(1, 2, 3, 4).flatMap(e => Stream(e * 2, e * 3)).toList should be(List(2, 3, 4, 6, 6, 9, 8, 12))
   }
 
+  import Stream._
+
   test("exercise 5.8, constant") {
-    import Stream._
-    constant(40).take(4).toList should be(List(40,40,40,40))
+    constant(40).take(4).toList should be(List(40, 40, 40, 40))
+  }
+
+  test("exercise 5.9, from") {
+    from(40).take(4).toList should be(List(40, 41, 42, 43))
   }
 }

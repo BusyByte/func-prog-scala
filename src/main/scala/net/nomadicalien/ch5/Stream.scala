@@ -47,19 +47,19 @@ sealed trait Stream[+A] {
     foldRight(true)((a, b) => p(a) && b)
 
   def headOption2: Option[A] =
-    foldRight(None:Option[A])((a,b) => Some(a))
+    foldRight(None: Option[A])((a, b) => Some(a))
 
   def map[B](f: A => B): Stream[B] =
-    foldRight(Empty:Stream[B])((e,a) => Cons(() => f(e),() => a))
+    foldRight(Empty: Stream[B])((e, a) => Cons(() => f(e), () => a))
 
   def filter(f: A => Boolean): Stream[A] =
-    foldRight(Empty:Stream[A])((e,a) => if(f(e)) Cons(() => e, () => a) else a)
+    foldRight(Empty: Stream[A])((e, a) => if (f(e)) Cons(() => e, () => a) else a)
 
-  def append[B>:A](s: => Stream[B]): Stream[B] =
+  def append[B >: A](s: => Stream[B]): Stream[B] =
     foldRight(s)((e, a) => Cons(() => e, () => a))
 
   def flatMap[B](f: A => Stream[B]): Stream[B] =
-    foldRight(Empty:Stream[B])((e,a) => f(e).append(a))
+    foldRight(Empty: Stream[B])((e, a) => f(e).append(a))
 }
 
 case object Empty extends Stream[Nothing]
@@ -80,7 +80,11 @@ object Stream {
 
 
   def constant[A](a: A): Stream[A] = {
-    lazy val tail : Stream[A] = Cons(() => a, () => tail)
+    lazy val tail: Stream[A] = Cons(() => a, () => tail)
     tail
   }
+
+  def from(n: Int): Stream[Int] =
+    Cons(() => n, () => from(n + 1))
+
 }

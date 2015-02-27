@@ -90,6 +90,31 @@ object Stream {
   def fibbo(): Stream[Int] = {
     def f(n0: Int, n1: Int): Stream[Int] =
       Cons(() => n0, () => f(n1, n0 + n1))
-    f(0,1)
+    f(0, 1)
   }
+
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] =
+    f(z) match {
+      case Some((a, s)) => Cons(() => a, () => unfold(s)(f))
+      case None => Empty
+    }
+
+  val ones: Stream[Int] = Stream.cons(1, ones)
+
+  val ones2: Stream[Int] =
+    unfold(1)(s=> Some(s,s))
+
+  def constant2[A](a: A): Stream[A] =
+      unfold(a)(s=> Some(s,s))
+
+  def from2(n: Int): Stream[Int] =
+    unfold(n)(s => Some(s, s+1))
+
+  def fibbo2(): Stream[Int] =
+    unfold((0,1)){s =>
+      val n0 = s._1
+      val n1 = s._2
+      val n2 = n0 + n1
+      Some(n0, (n1, n2))
+    }
 }

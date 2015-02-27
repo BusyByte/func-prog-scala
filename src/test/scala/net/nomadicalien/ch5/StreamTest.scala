@@ -78,4 +78,25 @@ class StreamTest extends FunSuite with Matchers {
   test("exercise 5.10, fibbo") {
     fibbo().take(7).toList should be(List(0, 1, 1, 2, 3, 5, 8))
   }
+
+  test("exercise 5.11, unfold") {
+    def next = { s: Int => Some((s + 1, s + 1)) }
+    unfold(1)(next).take(7).toList should be(List(2, 3, 4, 5, 6, 7, 8))
+  }
+
+  test("exercise 5.12, ones via unfold") {
+    ones2.take(3).toList should be(List(1, 1, 1))
+  }
+
+  test("exercise 5.12, constant via unfold") {
+    constant2(5).take(3).toList should be(List(5, 5, 5))
+  }
+
+  test("exercise 5.12, from via unfold") {
+    from2(5).take(3).toList should be(List(5, 6, 7))
+  }
+
+  test("exercise 5.12, fibbo via unfold") {
+    fibbo2().take(7).toList should be(List(0, 1, 1, 2, 3, 5, 8))
+  }
 }

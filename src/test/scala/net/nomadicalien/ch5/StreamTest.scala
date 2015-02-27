@@ -74,4 +74,8 @@ class StreamTest extends FunSuite with Matchers {
   test("exercise 5.9, from") {
     from(40).take(4).toList should be(List(40, 41, 42, 43))
   }
+
+  test("exercise 5.10, fibbo") {
+    fibbo().take(7).toList should be(List(0, 1, 1, 2, 3, 5, 8))
+  }
 }

@@ -87,4 +87,9 @@ object Stream {
   def from(n: Int): Stream[Int] =
     Cons(() => n, () => from(n + 1))
 
+  def fibbo(): Stream[Int] = {
+    def f(n0: Int, n1: Int): Stream[Int] =
+      Cons(() => n0, () => f(n1, n0 + n1))
+    f(0,1)
+  }
 }

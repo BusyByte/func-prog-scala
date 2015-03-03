@@ -94,6 +94,11 @@ sealed trait Stream[+A] {
       case (Empty, Cons(h2, t2)) => Some((None, Some(h2())), (Empty: Stream[A], t2()))
       case (Cons(h, t), Cons(h2, t2)) => Some((Some(h()), Some(h2())), (t(), t2()))
     }
+
+  def startsWith[A](s: Stream[A]): Boolean =
+    zipAll(s).takeWhile(!_._2.isEmpty) forAll {
+      case (h,h2) => h == h2
+    }
 }
 
 case object Empty extends Stream[Nothing]

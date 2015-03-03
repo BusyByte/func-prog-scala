@@ -120,5 +120,9 @@ class StreamTest extends FunSuite with Matchers {
     Stream(1, 2, 3, 4).zipAll(Stream(2, 3)).toList should be(List((Some(1), Some(2)), (Some(2), Some(3)), (Some(3), None), (Some(4), None)))
   }
 
+  test("exercise 5.14, startsWith via other methods") {
+    Stream(1,2,3) startsWith Stream(1,2) should be(true)
+  }
+
 
 }

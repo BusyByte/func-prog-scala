@@ -1,5 +1,7 @@
 package net.nomadicalien.ch5
 
+import net.nomadicalien.ch5.Stream._
+
 /**
  * Created by Shawn on 2/19/2015.
  */
@@ -60,6 +62,38 @@ sealed trait Stream[+A] {
 
   def flatMap[B](f: A => Stream[B]): Stream[B] =
     foldRight(Empty: Stream[B])((e, a) => f(e).append(a))
+
+  def map2[B](f: A => B): Stream[B] =
+    unfold(this) {
+      case Cons(h, t) => Some(f(h()), t())
+      case _ => None
+    }
+
+  def take2(n: Int): Stream[A] =
+    unfold(this) {
+      case Cons(h, t) if n > 0 => Some(h(), t().take2(n - 1))
+      case _ => None
+    }
+
+  def takeWhile3(f: A => Boolean): Stream[A] =
+    unfold(this) {
+      case Cons(h, t) if f(h()) => Some(h(), t().takeWhile3(f))
+      case _ => None
+    }
+
+  def zipWith[B, C](s2: Stream[B])(f: (A, B) => C): Stream[C] =
+    unfold((this, s2)) {
+      case (Cons(h, t), Cons(h2, t2)) => Some(f(h(), h2()), (t(), t2()))
+      case _ => None
+    }
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] =
+    unfold((this, s2)) {
+      case (Empty, Empty) => None
+      case (Cons(h, t), Empty) => Some((Some(h()), None), (t(), Empty: Stream[B]))
+      case (Empty, Cons(h2, t2)) => Some((None, Some(h2())), (Empty: Stream[A], t2()))
+      case (Cons(h, t), Cons(h2, t2)) => Some((Some(h()), Some(h2())), (t(), t2()))
+    }
 }
 
 case object Empty extends Stream[Nothing]
@@ -102,16 +136,16 @@ object Stream {
   val ones: Stream[Int] = Stream.cons(1, ones)
 
   val ones2: Stream[Int] =
-    unfold(1)(s=> Some(s,s))
+    unfold(1)(s => Some(s, s))
 
   def constant2[A](a: A): Stream[A] =
-      unfold(a)(s=> Some(s,s))
+    unfold(a)(s => Some(s, s))
 
   def from2(n: Int): Stream[Int] =
-    unfold(n)(s => Some(s, s+1))
+    unfold(n)(s => Some(s, s + 1))
 
   def fibbo2(): Stream[Int] =
-    unfold((0,1)){s =>
+    unfold((0, 1)) { s =>
       val n0 = s._1
       val n1 = s._2
       val n2 = n0 + n1

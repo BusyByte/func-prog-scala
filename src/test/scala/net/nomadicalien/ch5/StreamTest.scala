@@ -65,7 +65,7 @@ class StreamTest extends FunSuite with Matchers {
     Stream(1, 2, 3, 4).flatMap(e => Stream(e * 2, e * 3)).toList should be(List(2, 3, 4, 6, 6, 9, 8, 12))
   }
 
-  import Stream._
+  import net.nomadicalien.ch5.Stream._
 
   test("exercise 5.8, constant") {
     constant(40).take(4).toList should be(List(40, 40, 40, 40))
@@ -99,4 +99,26 @@ class StreamTest extends FunSuite with Matchers {
   test("exercise 5.12, fibbo via unfold") {
     fibbo2().take(7).toList should be(List(0, 1, 1, 2, 3, 5, 8))
   }
+
+  test("exercise 5.13, map via unfold") {
+    Stream(1, 2, 3, 4).map2(_ * 2).toList should be(List(2, 4, 6, 8))
+  }
+
+  test("exercise 5.13, take via unfold") {
+    Stream(1, 2, 3, 4).take2(2).toList should be(List(1, 2))
+  }
+
+  test("exercise 5.13, dropWhile via unfold") {
+    Stream(1, 2, 3, 4).takeWhile3(_ <= 3).toList should be(List(1, 2, 3))
+  }
+
+  test("exercise 5.13, zipWith via unfold") {
+    Stream(1, 2, 3, 4).zipWith(Stream(2, 3, 4, 5))((a, b) => a + b).toList should be(List(3, 5, 7, 9))
+  }
+
+  test("exercise 5.13, zipAll via unfold") {
+    Stream(1, 2, 3, 4).zipAll(Stream(2, 3)).toList should be(List((Some(1), Some(2)), (Some(2), Some(3)), (Some(3), None), (Some(4), None)))
+  }
+
+
 }

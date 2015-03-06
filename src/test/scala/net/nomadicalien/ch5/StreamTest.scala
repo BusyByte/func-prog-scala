@@ -124,5 +124,9 @@ class StreamTest extends FunSuite with Matchers {
     Stream(1,2,3) startsWith Stream(1,2) should be(true)
   }
 
+  test("exercise 5.15, tails via unfold") {
+    Stream(1,2,3).tails.toList.map(_.toList) should be(List(List(1, 2, 3), List(2, 3), List(3), List()))
+  }
+
 
 }

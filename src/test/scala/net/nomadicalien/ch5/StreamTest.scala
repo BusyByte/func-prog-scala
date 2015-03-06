@@ -128,5 +128,9 @@ class StreamTest extends FunSuite with Matchers {
     Stream(1,2,3).tails.toList.map(_.toList) should be(List(List(1, 2, 3), List(2, 3), List(3), List()))
   }
 
+  test("exercise 5.16, scanRight") {
+    Stream(1,2,3).scanRight(0)(_ + _).toList should be(List(6,5,3,0))
+  }
+
 
 }

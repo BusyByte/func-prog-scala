@@ -103,7 +103,7 @@ sealed trait Stream[+A] {
   def tails: Stream[Stream[A]] =
     unfold(this) {
       case Empty => None
-      case s => Some(s, s.drop(1))
+      case Cons(s,t) => Some(Cons(s,t), t())
     } append Stream(empty)
 
 }

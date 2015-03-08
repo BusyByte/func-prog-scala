@@ -50,4 +50,16 @@ object RNG {
     val (d3,rng3) = double(rng2)
     ((d1,d2,d3), rng3)
   }
+
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+    def i(cnt: Int)(r: RNG)(acc: List[Int]): (List[Int], RNG) = {
+      if(cnt == 0) {
+        (acc, r)
+      } else {
+        val (nextRndInt, nextRng) = nonNegativeInt(r)
+        i(cnt-1)(nextRng)(nextRndInt :: acc)
+      }
+    }
+    i(count)(rng)(Nil)
+  }
 }

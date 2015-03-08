@@ -63,4 +63,8 @@ class SimpleRNGTest extends FunSuite with Matchers {
     validateN(rng, ITERATIONS, double3, validateDouble3)
   }
 
+  test("exercise 6.4, ints") {
+    ints(4)(rng)._1 should be(List(664650556, 1500047067, 1630622802, 7694978))
+  }
+
 }

@@ -2,26 +2,65 @@ package net.nomadicalien.ch6
 
 import org.scalatest.{FunSuite, Matchers}
 
+
+object SimpleRNGTest {
+  val ITERATIONS = 1000
+}
+
 /**
  * Created by Shawn on 2/20/2015.
  */
 class SimpleRNGTest extends FunSuite with Matchers {
+
   import RNG._
+  import SimpleRNGTest._
+
+  val rng = new SimpleRNG(20l)
+
   test("exercise 6.1, nonNegativeInt via nextInt") {
-    val rng = new SimpleRNG(20l)
-
-    def validatePositive(r: RNG, n: Int):Unit = {
-      val (randN, newRNG) = nonNegativeInt(r)
-      println(randN)
-      randN should (be >= 0 and be <= Int.MaxValue)
-      if(n > 0) {
-        validatePositive(newRNG, n-1)
-      }
-    }
-
-    validatePositive(rng, 1000)
+    validateN(rng, ITERATIONS, nonNegativeInt, validatePositiveInt)
   }
 
+  private def validatePositiveInt(i: Int): Unit = {
+    i should (be >= 0 and be <= Int.MaxValue)
+  }
 
+  private def validateN[A](r: RNG, n: Int, f: (RNG) => (A,RNG), v: (A) => Unit): Unit = {
+    val (randNum, nextRNG) = f(r)
+    println(randNum)
+    v(randNum)
+    if (n > 0) {
+      validateN(nextRNG, n - 1, f, v)
+    }
+  }
+
+  test("exercise 6.2, double") {
+    validateN(rng, ITERATIONS, double, validateDoubleBetweenZeroAndOne)
+  }
+
+  private def validateDoubleBetweenZeroAndOne(d: Double): Unit = {
+    d should (be >= 0.0d and be <= 1.0d)
+  }
+
+  private def validateIntDouble(p: (Int,Double)): Unit = {
+    validatePositiveInt(p._1)
+    validateDoubleBetweenZeroAndOne(p._2)
+  }
+
+  private def validateDoubleInt(p: (Double,Int)): Unit = {
+    validateIntDouble(p.swap)
+  }
+
+  private def validateDouble3(p: (Double,Double,Double)): Unit = {
+    validateDoubleBetweenZeroAndOne(p._1)
+    validateDoubleBetweenZeroAndOne(p._2)
+    validateDoubleBetweenZeroAndOne(p._3)
+  }
+
+  test("exercise 6.3, combinations") {
+    validateN(rng, ITERATIONS, intDouble, validateIntDouble)
+    validateN(rng, ITERATIONS, doubleInt, validateDoubleInt)
+    validateN(rng, ITERATIONS, double3, validateDouble3)
+  }
 
 }

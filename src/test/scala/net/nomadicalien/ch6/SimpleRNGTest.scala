@@ -67,8 +67,8 @@ class SimpleRNGTest extends FunSuite with Matchers {
     ints(4)(rng)._1 should be(List(664650556, 1500047067, 1630622802, 7694978))
   }
 
-  private def validateN2[A](r: RNG, n: Int, f: (RNG) => Rand[A], v: (A) => Unit): Unit = {
-    val (randNum, nextRNG) = f(r)(r)
+  private def validateN2[A](r: RNG, n: Int, f: => Rand[A], v: (A) => Unit): Unit = {
+    val (randNum, nextRNG) = f(r)
     println(randNum)
     v(randNum)
     if (n > 0) {
@@ -77,7 +77,16 @@ class SimpleRNGTest extends FunSuite with Matchers {
   }
 
   test("exercise 6.5, double via map") {
-    validateN2(rng, ITERATIONS, {r=>r.double}, validateDoubleBetweenZeroAndOne)
+    validateN2(rng, ITERATIONS, double2, validateDoubleBetweenZeroAndOne)
   }
 
+  test("exercise 6.6, map2") {
+    val f = map2(nonNegativeInt, nonNegativeEven){(a,b) =>
+      a should be(7694978)
+      b should be(1630622802)
+      a + b
+    }
+
+    f(rng)._1 should be(1638317780)
+  }
 }

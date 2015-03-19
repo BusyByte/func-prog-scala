@@ -89,4 +89,13 @@ class SimpleRNGTest extends FunSuite with Matchers {
 
     f(rng)._1 should be(1638317780)
   }
+
+  test("exercise 6.7, sequence") {
+    val listOfRand = List(nonNegativeInt _, nonNegativeInt _)
+    sequence(listOfRand)(rng)._1 should be(List(7694978, 1630622802))
+  }
+
+  test("exercise 6.7, ints") {
+    ints2(2)(rng)._1 should be(List(7694978, -1630622802))
+  }
 }

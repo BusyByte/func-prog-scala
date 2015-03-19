@@ -89,4 +89,11 @@ object RNG {
       (c, rng3)
     }
 
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
+    fs.foldRight(unit(List[A]()))((f, acc) => map2(f, acc)(_ :: _))
+
+
+  def ints2(count: Int): Rand[List[Int]] =
+    sequence(List.fill(count)(r => r.nextInt))
+
 }

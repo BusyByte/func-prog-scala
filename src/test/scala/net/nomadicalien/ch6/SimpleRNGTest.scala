@@ -25,7 +25,7 @@ class SimpleRNGTest extends FunSuite with Matchers {
     i should (be >= 0 and be <= Int.MaxValue)
   }
 
-  private def validateN[A](r: RNG, n: Int, f: (RNG) => (A,RNG), v: (A) => Unit): Unit = {
+  private def validateN[A](r: RNG, n: Int, f: (RNG) => (A, RNG), v: (A) => Unit): Unit = {
     val (randNum, nextRNG) = f(r)
     println(randNum)
     v(randNum)
@@ -42,16 +42,16 @@ class SimpleRNGTest extends FunSuite with Matchers {
     d should (be >= 0.0d and be <= 1.0d)
   }
 
-  private def validateIntDouble(p: (Int,Double)): Unit = {
+  private def validateIntDouble(p: (Int, Double)): Unit = {
     validatePositiveInt(p._1)
     validateDoubleBetweenZeroAndOne(p._2)
   }
 
-  private def validateDoubleInt(p: (Double,Int)): Unit = {
+  private def validateDoubleInt(p: (Double, Int)): Unit = {
     validateIntDouble(p.swap)
   }
 
-  private def validateDouble3(p: (Double,Double,Double)): Unit = {
+  private def validateDouble3(p: (Double, Double, Double)): Unit = {
     validateDoubleBetweenZeroAndOne(p._1)
     validateDoubleBetweenZeroAndOne(p._2)
     validateDoubleBetweenZeroAndOne(p._3)
@@ -81,7 +81,7 @@ class SimpleRNGTest extends FunSuite with Matchers {
   }
 
   test("exercise 6.6, map2") {
-    val f = map2(nonNegativeInt, nonNegativeEven){(a,b) =>
+    val f = map2(nonNegativeInt, nonNegativeEven) { (a, b) =>
       a should be(7694978)
       b should be(1630622802)
       a + b
@@ -98,4 +98,29 @@ class SimpleRNGTest extends FunSuite with Matchers {
   test("exercise 6.7, ints") {
     ints2(2)(rng)._1 should be(List(7694978, -1630622802))
   }
+
+  test("exercise 6.8, nonNegativeLessThan") {
+    nonNegativeLessThan(100)(rng)._1 should be(78)
+  }
+
+
+  test("exercise 6.9, mapSingle") {
+    val f = mapSingle(nonNegativeInt) { a =>
+      a should be(7694978)
+      a % 2 == 0
+    }
+
+    f(rng)._1 should be(true)
+  }
+
+  test("exercise 6.9, mapTwo") {
+    val f = mapTwo(nonNegativeInt, nonNegativeEven) { (a, b) =>
+      a should be(7694978)
+      b should be(1630622802)
+      a + b
+    }
+
+    f(rng)._1 should be(1638317780)
+  }
+
 }

@@ -54,6 +54,13 @@ object Gen {
   def listOfN[A](n: Int, a: Gen[A]): Gen[List[A]] =
     Gen(State.sequence(List.fill(n)(a.sample)))
   def unit[A](a: => A): Gen[A] = Gen[A](State.unit(a))
+
+  def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] = boolean flatMap {useLeft =>
+  if(useLeft)
+    g1
+  else
+    g2
+  }
 }
 case class Gen[A](sample: State[RNG,A]) {
   def flatMap[B](f: A => Gen[B]): Gen[B] =

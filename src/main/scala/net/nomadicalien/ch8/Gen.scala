@@ -61,6 +61,17 @@ object Gen {
   else
     g2
   }
+
+  def weighted[A](g1: (Gen[A],Double), g2: (Gen[A],Double)): Gen[A] = {
+    val cutoff = g1._2 / (g1._2 + g2._2)
+    Gen(State(RNG.double)).flatMap { d =>
+      if(d > cutoff)
+        g2._1
+      else
+        g1._1
+
+    }
+  }
 }
 case class Gen[A](sample: State[RNG,A]) {
   def flatMap[B](f: A => Gen[B]): Gen[B] =

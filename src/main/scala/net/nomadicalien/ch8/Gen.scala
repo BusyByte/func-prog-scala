@@ -1,5 +1,6 @@
 package net.nomadicalien.ch8
 
+import _root_.fpinscala.testing.exhaustive.Gen
 import net.nomadicalien.ch6.{RNG, State}
 import net.nomadicalien.ch8.Prop._
 import net.nomadicalien.ch5.Stream
@@ -118,8 +119,11 @@ object Gen {
 
     }
   }
+
+  def listOf[A](g: Gen[A]): SGen[List[A]] =
+    SGen(i => listOfN(i, g))
 }
-case class Gen[A](sample: State[RNG,A]) {
+case class Gen[+A](sample: State[RNG,A]) {
   def flatMap[B](f: A => Gen[B]): Gen[B] =
     Gen(sample.flatMap(a => f(a).sample))
 
@@ -131,6 +135,7 @@ case class Gen[A](sample: State[RNG,A]) {
 
   def unsized: SGen[A] = SGen(_ => this)
 
+
 }
 
 /*trait Gen[A] {
@@ -141,4 +146,9 @@ case class Gen[A](sample: State[RNG,A]) {
 trait SGen[+A] {
 
 }*/
-case class SGen[+A](forSize: Int => Gen[A])
+case class SGen[+A](forSize: Int => Gen[A]) {
+  def apply(n: Int): Gen[A] = forSize(n)
+
+  def flatMap[B](f: A => Gen[B]): SGen[B] =
+    SGen(forSize andThen (_ flatMap f))
+}

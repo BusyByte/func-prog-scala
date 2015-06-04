@@ -25,24 +25,24 @@ trait Prop {
   }*/
 }*/
 
-case class Prop(run: (TestCases,RNG) => Result) {
+case class Prop(run: (MaxSize,TestCases,RNG) => Result) {
   def &&(p: Prop): Prop = Prop {
-    (numCases, rng) =>
-      run(numCases, rng) match {
-        case Passed => p.run(numCases, rng)
+    (maxSize,numCases, rng) =>
+      run(maxSize,numCases, rng) match {
+        case Passed => p.run(maxSize,numCases, rng)
         case f => f
       }
   }
   def ||(p: Prop): Prop = Prop {
-    (numCases, rng) =>
-      run(numCases, rng) match {
-        case Falsified(failureMessage,_) => p.tag(failureMessage).run(numCases,rng)
+    (maxSize,numCases, rng) =>
+      run(maxSize,numCases, rng) match {
+        case Falsified(failureMessage,_) => p.tag(failureMessage).run(maxSize,numCases,rng)
         case p => p
       }
   }
 
   def tag(msg: String) = Prop {
-    (numCases,rng) => run(numCases,rng) match {
+    (maxSize,numCases,rng) => run(maxSize,numCases,rng) match {
       case Falsified(e, c) => Falsified(msg + "\n" + e, c)
       case x => x
     }
@@ -61,6 +61,7 @@ case class Falsified(failure: FailedCase,
 }
 
 object Prop {
+  type MaxSize = Int
   type SuccessCount = Int
   type FailedCase = String
   type TestCases = Int
@@ -122,6 +123,21 @@ object Gen {
 
   def listOf[A](g: Gen[A]): SGen[List[A]] =
     SGen(i => listOfN(i, g))
+
+  def forAll[A](g: SGen[A])(f: A => Boolean): Prop =
+    forAll(g(_))(f)
+
+  def forAll[A](g: Int => Gen[A])(f: A => Boolean): Prop = Prop {
+    (max,n,rng) =>
+      val casesPerSize = (n + (max - 1)) / max
+      val props: Stream[Prop] =
+        Stream.from(0).take((n min max) + 1).map(i => forAll(g(i))(f))
+      val prop: Prop =
+        props.map(p => Prop { (max, _, rng) =>
+          p.run(max, casesPerSize, rng)
+        }).toList.reduce(_ && _)
+      prop.run(max,n,rng)
+  }
 }
 case class Gen[+A](sample: State[RNG,A]) {
   def flatMap[B](f: A => Gen[B]): Gen[B] =

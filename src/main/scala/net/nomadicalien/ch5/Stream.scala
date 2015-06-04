@@ -1,5 +1,6 @@
 package net.nomadicalien.ch5
 
+import _root_.fpinscala.laziness.Cons
 import net.nomadicalien.ch5.Stream._
 
 /**
@@ -86,6 +87,15 @@ sealed trait Stream[+A] {
       case (Cons(h, t), Cons(h2, t2)) => Some(f(h(), h2()), (t(), t2()))
       case _ => None
     }
+
+  def zip[B](s2: Stream[B]): Stream[(A,B)] =
+    zipWith(s2)((_,_))
+
+  @annotation.tailrec
+  final def find(f: A => Boolean): Option[A] = this match {
+    case Empty => None
+    case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
+  }
 
   def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] =
     unfold((this, s2)) {

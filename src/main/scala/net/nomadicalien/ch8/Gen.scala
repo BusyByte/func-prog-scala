@@ -1,14 +1,11 @@
 package net.nomadicalien.ch8
 
-import fpinscala.laziness.Stream
-import fpinscala.state._
-import fpinscala.parallelism._
-import fpinscala.parallelism.Par.Par
-import Gen._
-import Prop._
-import java.util.concurrent.{Executors,ExecutorService}
-
 import net.nomadicalien.ch6.{RNG, State}
+import net.nomadicalien.ch8.Prop._
+import net.nomadicalien.ch5.Stream
+import net.nomadicalien.ch5.Stream._
+import org.scalacheck.Test.Failed
+
 
 import scala.annotation.tailrec
 
@@ -16,7 +13,7 @@ import scala.annotation.tailrec
 The library developed in this chapter goes through several iterations. This file is just the
 shell, which you can fill in and modify while working through the chapter.
 */
-
+/*
 trait Prop {
   //def check: Unit
   //def check: Boolean
@@ -25,12 +22,61 @@ trait Prop {
     self =>
     def check = self.check && p.check
   }*/
+}*/
+
+case class Prop(run: (TestCases,RNG) => Result) {
+  def &&(p: Prop): Prop = Prop {
+    (numCases, rng) =>
+      run(numCases, rng) match {
+        case Passed => p.run(numCases, rng)
+        case f => f
+      }
+  }
+  def ||(p: Prop): Prop = Prop {
+    (numCases, rng) =>
+      run(numCases, rng) match {
+        case Falsified(failureMessage,_) => p.tag(failureMessage).run(numCases,rng)
+        case p => p
+      }
+  }
+
+  def tag(msg: String) = Prop {
+    (numCases,rng) => run(numCases,rng) match {
+      case Falsified(e, c) => Falsified(msg + "\n" + e, c)
+      case x => x
+    }
+  }
+}
+
+sealed trait Result {
+  def isFalsified: Boolean
+}
+case object Passed extends Result {
+  def isFalsified = false
+}
+case class Falsified(failure: FailedCase,
+                     successes: SuccessCount) extends Result {
+  def isFalsified = true
 }
 
 object Prop {
   type SuccessCount = Int
   type FailedCase = String
-  def forAll[A](gen: Gen[A])(f: A => Boolean): Prop = ???
+  type TestCases = Int
+ // type Result = Option[(FailedCase, SuccessCount)]
+ def forAll[A](as: Gen[A])(f: A => Boolean): Prop = Prop {
+   (n,rng) => randomStream(as)(rng).zip(Stream.from(0)).take(n).map {
+     case (a, i) => try {
+       if (f(a)) Passed else Falsified(a.toString, i)
+     } catch { case e: Exception => Falsified(buildMsg(a, e), i) }
+   }.find(_.isFalsified).getOrElse(Passed)
+ }
+  def randomStream[A](g: Gen[A])(rng: RNG): Stream[A] =
+    Stream.unfold(rng)(rng => Some(g.sample.run(rng)))
+  def buildMsg[A](s: A, e: Exception): String =
+    s"test case: $s\n" +
+      s"generated an exception: ${e.getMessage}\n" +
+      s"stack trace:\n ${e.getStackTrace.mkString("\n")}"
 }
 
 object Gen {

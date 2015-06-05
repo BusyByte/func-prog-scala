@@ -1,14 +1,12 @@
 package net.nomadicalien.ch8
 
-import _root_.fpinscala.state.RNG
-import _root_.fpinscala.testing.Prop
-import _root_.fpinscala.testing.exhaustive.Gen
-import net.nomadicalien.ch6.{RNG, State}
-import net.nomadicalien.ch8.Prop._
-import net.nomadicalien.ch5.Stream
-import net.nomadicalien.ch5.Stream._
-import org.scalacheck.Test.Failed
+import java.util.concurrent.{ExecutorService, Executors}
 
+import net.nomadicalien.ch5.Stream
+import net.nomadicalien.ch6.{RNG, State}
+import net.nomadicalien.ch7.Par
+import net.nomadicalien.ch7.Par.Par
+import net.nomadicalien.ch8.Prop._
 
 import scala.annotation.tailrec
 
@@ -31,7 +29,7 @@ case class Prop(run: (MaxSize,TestCases,RNG) => Result) {
   def &&(p: Prop): Prop = Prop {
     (maxSize,numCases, rng) =>
       run(maxSize,numCases, rng) match {
-        case Passed => p.run(maxSize,numCases, rng)
+        case Passed | Proved=> p.run(maxSize,numCases, rng)
         case f => f
       }
   }
@@ -57,6 +55,9 @@ sealed trait Result {
 case object Passed extends Result {
   def isFalsified = false
 }
+case object Proved extends Result {
+ def isFalsified: Boolean = false
+}
 case class Falsified(failure: FailedCase,
                      successes: SuccessCount) extends Result {
   def isFalsified = true
@@ -68,6 +69,7 @@ object Prop {
   type FailedCase = String
   type TestCases = Int
  // type Result = Option[(FailedCase, SuccessCount)]
+
  def forAll[A](as: Gen[A])(f: A => Boolean): Prop = Prop {
    (n,rng) => randomStream(as)(rng).zip(Stream.from(0)).take(n).map {
      case (a, i) => try {
@@ -109,6 +111,8 @@ object Prop {
         println(s"! Falsified after $n passed tests:\n $msg")
       case Passed =>
         println(s"+ OK, passed $testCases tests.")
+      case Proved =>
+        println(s"+ OK, proved property.")
     }
 
 }
@@ -130,7 +134,6 @@ object Gen {
     )
   }
   def boolean: Gen[Boolean] = Gen(State(RNG.boolean))
-  def listOf[A](a: Gen[A]): Gen[List[A]] = ???
   def listOfN[A](n: Int, a: Gen[A]): Gen[List[A]] =
     Gen(State.sequence(List.fill(n)(a.sample)))
   def unit[A](a: => A): Gen[A] = Gen[A](State.unit(a))
@@ -178,9 +181,52 @@ object Gen {
       case (a,b) => a > b
     })
   }
+
+  val ES: ExecutorService = Executors.newCachedThreadPool
+  val p1 = Prop.forAll(Gen.unit(Par.unit(1)))(i =>
+    Par.map(i)(_ + 1)(ES).get == Par.unit(2)(ES).get)
+
+  def check(p: => Boolean): Prop = Prop { (_, _, _) =>
+    if (p) Passed else Falsified("()", 0)
+  }
+
+  val p2 = check {
+    val p = Par.map(Par.unit(1))(_ + 1)
+    val p2 = Par.unit(2)
+    p(ES).get == p2(ES).get
+  }
+
+  def equal[A](p: Par[A], p2: Par[A]): Par[Boolean] =
+    Par.map2(p,p2)(_ == _)
+
+  val p3 = check {
+    equal(
+      Par.map(Par.unit(1))(_ + 1),
+      Par.unit(2)
+    )(ES).get
+  }
+
+  val S = weighted(
+    choose(1,4).map(Executors.newFixedThreadPool) -> .75,
+    unit(Executors.newCachedThreadPool) -> .25)
+/*
+
+  def forAllPar[A](g: Gen[A])(f: A => Par[Boolean]): Prop =
+    forAll(S.map2(g)((_,_))) { case (s,a) => f(a)(s).get }
+*/
+
+  def forAllPar[A](g: Gen[A])(f: A => Par[Boolean]): Prop =
+    forAll(S ** g) { case (s,a) => f(a)(s).get }
 }
 
 case class Gen[+A](sample: State[RNG,A]) {
+  def map[B](f: A => B): Gen[B] =
+    Gen(sample.map(f))
+
+  def map2[B,C](g: Gen[B])(f: (A,B) => C): Gen[C] =
+    Gen(sample.map2(g.sample)(f))
+
+
   def flatMap[B](f: A => Gen[B]): Gen[B] =
     Gen(sample.flatMap(a => f(a).sample))
 
@@ -192,7 +238,8 @@ case class Gen[+A](sample: State[RNG,A]) {
 
   def unsized: SGen[A] = SGen(_ => this)
 
-
+  def **[B](g: Gen[B]): Gen[(A,B)] =
+    (this map2 g)((_,_))
 }
 
 /*trait Gen[A] {

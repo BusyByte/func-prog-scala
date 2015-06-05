@@ -5,7 +5,7 @@ import java.util.concurrent.{Callable, CountDownLatch, ExecutorService}
 object Nonblocking {
 
   trait Future[+A] {
-    private[parallelism] def apply(k: A => Unit): Unit
+    private[ch7] def apply(k: A => Unit): Unit
   }
 
   type Par[+A] = ExecutorService => Future[A]

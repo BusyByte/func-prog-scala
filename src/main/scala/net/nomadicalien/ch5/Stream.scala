@@ -1,6 +1,5 @@
 package net.nomadicalien.ch5
 
-import _root_.fpinscala.laziness.Cons
 import net.nomadicalien.ch5.Stream._
 
 /**

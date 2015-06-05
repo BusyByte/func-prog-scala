@@ -1,6 +1,5 @@
 package net.nomadicalien.ch6
 
-import _root_.fpinscala.state.RNG.Simple
 
 
 /**

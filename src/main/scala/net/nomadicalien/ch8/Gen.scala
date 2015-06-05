@@ -1,5 +1,7 @@
 package net.nomadicalien.ch8
 
+import _root_.fpinscala.state.RNG
+import _root_.fpinscala.testing.Prop
 import _root_.fpinscala.testing.exhaustive.Gen
 import net.nomadicalien.ch6.{RNG, State}
 import net.nomadicalien.ch8.Prop._
@@ -79,6 +81,24 @@ object Prop {
     s"test case: $s\n" +
       s"generated an exception: ${e.getMessage}\n" +
       s"stack trace:\n ${e.getStackTrace.mkString("\n")}"
+
+  def apply(f: (TestCases,RNG) => Result): Prop =
+    Prop { (_,n,rng) => f(n,rng) }
+
+  def forAll[A](g: SGen[A])(f: A => Boolean): Prop =
+    forAll(g(_))(f)
+
+  def forAll[A](g: Int => Gen[A])(f: A => Boolean): Prop = Prop {
+    (max,n,rng) =>
+      val casesPerSize = (n + (max - 1)) / max
+      val props: Stream[Prop] =
+        Stream.from(0).take((n min max) + 1).map(i => forAll(g(i))(f))
+      val prop: Prop =
+        props.map(p => Prop { (max, _, rng) =>
+          p.run(max, casesPerSize, rng)
+        }).toList.reduce(_ && _)
+      prop.run(max,n,rng)
+  }
 }
 
 object Gen {
@@ -124,20 +144,6 @@ object Gen {
   def listOf[A](g: Gen[A]): SGen[List[A]] =
     SGen(i => listOfN(i, g))
 
-  def forAll[A](g: SGen[A])(f: A => Boolean): Prop =
-    forAll(g(_))(f)
-
-  def forAll[A](g: Int => Gen[A])(f: A => Boolean): Prop = Prop {
-    (max,n,rng) =>
-      val casesPerSize = (n + (max - 1)) / max
-      val props: Stream[Prop] =
-        Stream.from(0).take((n min max) + 1).map(i => forAll(g(i))(f))
-      val prop: Prop =
-        props.map(p => Prop { (max, _, rng) =>
-          p.run(max, casesPerSize, rng)
-        }).toList.reduce(_ && _)
-      prop.run(max,n,rng)
-  }
 }
 case class Gen[+A](sample: State[RNG,A]) {
   def flatMap[B](f: A => Gen[B]): Gen[B] =

@@ -110,6 +110,7 @@ object Prop {
       case Passed =>
         println(s"+ OK, passed $testCases tests.")
     }
+
 }
 
 object Gen {
@@ -155,7 +156,30 @@ object Gen {
   def listOf[A](g: Gen[A]): SGen[List[A]] =
     SGen(i => listOfN(i, g))
 
+  val smallInt = Gen.choose(-10,10)
+  val maxProp = forAll(listOf(smallInt)) { l =>
+    val max = l.max
+    !l.exists(_ > max) // No value greater than `max` should exist in `l`
+  }
+
+  def listOf1[A](g: Gen[A]): SGen[List[A]] =
+    SGen(n => g.listOfN(n max 1))
+
+  val maxProp1 = forAll(listOf1(smallInt)) { l =>
+    val max = l.max
+    !l.exists(_ > max) // No value greater than `max` should exist in `l`
+  }
+
+  val sortedProp = forAll(listOf(smallInt)) { ns =>
+    val nss = ns.sorted
+    // We specify that every sorted list is either empty, has one element,
+    // or has no two consecutive elements `(a,b)` such that `a` is greater than `b`.
+    (ns.isEmpty || nss.tail.isEmpty || !ns.zip(ns.tail).exists {
+      case (a,b) => a > b
+    })
+  }
 }
+
 case class Gen[+A](sample: State[RNG,A]) {
   def flatMap[B](f: A => Gen[B]): Gen[B] =
     Gen(sample.flatMap(a => f(a).sample))

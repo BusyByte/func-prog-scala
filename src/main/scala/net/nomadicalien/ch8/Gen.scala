@@ -190,11 +190,11 @@ object Gen {
     if (p) Passed else Falsified("()", 0)
   }
 
-  val p2 = check {
+/*  val p2 = check {
     val p = Par.map(Par.unit(1))(_ + 1)
     val p2 = Par.unit(2)
     p(ES).get == p2(ES).get
-  }
+  }*/
 
   def equal[A](p: Par[A], p2: Par[A]): Par[Boolean] =
     Par.map2(p,p2)(_ == _)
@@ -215,8 +215,36 @@ object Gen {
     forAll(S.map2(g)((_,_))) { case (s,a) => f(a)(s).get }
 */
 
+  /*def forAllPar[A](g: Gen[A])(f: A => Par[Boolean]): Prop =
+    forAll(S ** g) { case (s,a) => f(a)(s).get }*/
+
   def forAllPar[A](g: Gen[A])(f: A => Par[Boolean]): Prop =
-    forAll(S ** g) { case (s,a) => f(a)(s).get }
+    forAll(S ** g) { case s ** a => f(a)(s).get }
+
+  def checkPar(p: Par[Boolean]): Prop =
+    forAllPar(Gen.unit(()))(_ => p)
+
+  val p2 = checkPar {
+    equal (
+      Par.map(Par.unit(1))(_ + 1),
+      Par.unit(2)
+    )
+  }
+
+  val pint = Gen.choose(0,10) map Par.unit
+  val p4 =
+    forAllPar(pint)(n => equal(Par.map(n)(y => y), n))
+
+  lazy val pint2: Gen[Par[Int]] = choose(-100,100).listOfN(choose(0,20)).map(l =>
+    l.foldLeft(Par.unit(0))((p,i) =>
+      Par.fork { Par.map2(p, Par.unit(i))(_ + _) }))
+
+
+  val forkProp = forAllPar(pint2)(i => equal(Par.fork(i), i)) tag "fork"
+}
+
+object ** {
+  def unapply[A,B](p: (A,B)) = Some(p)
 }
 
 case class Gen[+A](sample: State[RNG,A]) {

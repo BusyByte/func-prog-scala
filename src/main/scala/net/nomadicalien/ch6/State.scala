@@ -1,8 +1,5 @@
 package net.nomadicalien.ch6
 
-/**
- * Created by Shawn on 3/18/2015.
- */
 case class State[S, +A](run: S => (A, S)) {
   import State._
 

@@ -1,10 +1,5 @@
 package net.nomadicalien.ch3
 
-import scala.annotation.tailrec
-
-/**
- * Created by Shawn on 2/9/2015.
- */
 sealed trait Tree[+A]
 
 case class Leaf[A](value: A) extends Tree[A]

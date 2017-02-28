@@ -2,9 +2,6 @@ package net.nomadicalien.ch2
 
 import scala.annotation.tailrec
 
-/**
- * Created by Shawn on 2/4/2015.
- */
 object Fibonacci {
   def fibbo(n : Int): Int = {
     @tailrec

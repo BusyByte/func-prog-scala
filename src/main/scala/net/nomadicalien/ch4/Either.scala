@@ -1,8 +1,5 @@
 package net.nomadicalien.ch4
 
-/**
- * Created by Shawn on 2/15/2015.
- */
 sealed trait Either[+E, +A] {
   def map[B](f: A => B): Either[E, B] = this match {
     case Right(b) => Right(f(b))

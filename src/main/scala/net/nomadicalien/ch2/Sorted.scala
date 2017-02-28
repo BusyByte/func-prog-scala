@@ -2,9 +2,6 @@ package net.nomadicalien.ch2
 
 import scala.annotation.tailrec
 
-/**
- * Created by Shawn on 2/5/2015.
- */
 object Sorted {
 
   def isSorted[A](as: Array[A], ordered: (A,A) => Boolean): Boolean = {

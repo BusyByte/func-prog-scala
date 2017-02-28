@@ -2,9 +2,6 @@ package net.nomadicalien.ch6
 
 
 
-/**
- * Created by Shawn on 3/7/2015.
- */
 trait RNG {
   def nextInt: (Int, RNG)
 }

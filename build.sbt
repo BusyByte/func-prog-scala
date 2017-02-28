@@ -2,12 +2,11 @@ organization := "net.nomadicalien"
 
 name := "func-prog-scala"
 
-version := "1.0.0-SNAPSHOT"
+version := "2.0.0-SNAPSHOT"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.12.1"
 
-libraryDependencies += "org.apache.logging.log4j" % "log4j" % "2.1"
+libraryDependencies ++= Seq("org.specs2" %% "specs2-core" % "3.8.8" % Test)
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+scalacOptions in Test ++= Seq("-Yrangepos")
 
-libraryDependencies += "junit" % "junit" % "4.12" % "test"

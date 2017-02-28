@@ -2,9 +2,6 @@ package net.nomadicalien.ch5
 
 import net.nomadicalien.ch5.Stream._
 
-/**
- * Created by Shawn on 2/19/2015.
- */
 sealed trait Stream[+A] {
   def headOption: Option[A] = this match {
     case Empty => None

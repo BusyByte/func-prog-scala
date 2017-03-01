@@ -9,7 +9,7 @@ class VarianceSpec extends Specification {
   }
 
   "exercise 4.2, variance" in {
-    variance(Seq(1.0,2.0,3.0,4.0,5.0,6.0)) must_== (Some(beCloseTo(2.916, 0.001)))
+    variance(Seq(1.0,2.0,3.0,4.0,5.0,6.0)).getOrElse(0.0) must beCloseTo(2.916, 0.001)
   }
 
   "exercise 4.2, variance None" in {

@@ -69,3 +69,19 @@ Variable-naming conventions like `f`, `g` or `h` because types important and not
 `abstracting over the type`
 
 `type paremeters` - in square brackets, normally like `A`, `B` or `C`
+
+### 2.5.2 Calling HOF with anonymous functions
+
+`function literal` or `anonymous function`
+
+## 2.6 Following types to implementations
+
+`currying`
+
+`function composition`
+
+`f andThen g` is the same as `g compose f`
+ 
+ compose is same as `g . f` or `g after f`
+ 
+ 

@@ -8,7 +8,8 @@ examples of side effects
 - Modifying a variable
 - Modifying a data structure in place
 - Setting a field on an object
-- Throwing an exception or halting with an error  Printing to the console or reading user input
+- Throwing an exception or halting with an error 
+- Printing to the console or reading user input
 - Reading from or writing to a file
 - Drawing on the screen
 
@@ -33,9 +34,8 @@ must actually have a side effect at some point
 
 A => B
 
-No observable side effects other than producing result (B)
-
-referential transparency
+- No observable side effects other than producing result (B)
+- referential transparency
 
 property of expressions and not just functions
 

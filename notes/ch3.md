@@ -36,4 +36,7 @@ reusing data since immutable instead of copying is `data sharing`
 
 ## 3.4 Recursion over lists and generalizing to higher-order functions
  
- 
+### 3.4.1 More functions for working with lists
+
+### 3.4.2 Loss of efficiency when assembling list functions from simpler components
+

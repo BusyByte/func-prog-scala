@@ -59,12 +59,14 @@ object List {
   }
 
   def concat[A](as: List[List[A]]):List[A] = {
-    foldLeft(as, Nil:List[A])((b,a) => foldLeft(a,b)((b,a)=>Cons(a,b)))
+    foldRight(as, Nil:List[A])(append)
   }
 
-  def append[A](as: List[A], elem:A): List[A] = {
-    foldRight(as, Cons(elem, Nil))(Cons(_,_))
-  }
+  def append[A](a1: List[A], a2: List[A]): List[A] =
+    a1 match {
+      case Nil => a2
+      case Cons(h,t) => Cons(h, append(t, a2))
+    }
 
   def init[A](l: List[A]): List[A] = l match {
     case Nil => Nil

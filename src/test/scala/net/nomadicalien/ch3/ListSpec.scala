@@ -91,7 +91,7 @@ class ListSpec extends Specification {
   }
 
   "exercise 3.14 implement append in terms of a fold" in {
-    append(List(1,2,3),4) must_== (List(1,2,3,4))
+    append(List(1,2,3),List(4)) must_== (List(1,2,3,4))
   }
 
   "exercise 3.15 implement append in terms of a fold" in {
@@ -100,7 +100,7 @@ class ListSpec extends Specification {
     List(4,5,6),
     List(7,8,9)
     )
-    concat(listOfLists) must_== (List(9,8,7,6,5,4,3,2,1))
+    concat(listOfLists) must_== (List(1,2,3,4,5,6,7,8,9))
   }
 
   "exercise 3.16 implement function which adds 1" in {

@@ -40,3 +40,11 @@ reusing data since immutable instead of copying is `data sharing`
 
 ### 3.4.2 Loss of efficiency when assembling list functions from simpler components
 
+## 3.5 Trees
+
+List is an example of an ADT (Algebraic Data Type) 
+
+sum type or union of data constructors
+
+each data constructor is product of it's arguments
+

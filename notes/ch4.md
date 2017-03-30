@@ -36,4 +36,14 @@ Options can be converted to Lists
 
 getOrElse
 
+lookupByName("Joe") is proper usage of Option
+because there may be nobody named Joe
+it does not indicate an error/throwable condition though
+
+common idiom `o.getOrElse(throw new Exception("FAIL"))` if no reasonable program would ever catch it
+
+### 4.3.2 Option composition, lifting, and wrapping exception-oriented APIs
+
+lift A => B produces Option[A] => Option[B]
+
 

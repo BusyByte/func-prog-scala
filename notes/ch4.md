@@ -76,4 +76,5 @@ Exercise 4.8 - If we have the left be a list structure and not short circuit
 Something like ValidatedNEL
 Applicative for with grouping (Monoid?) of Lefts into List?
 
+No discussion fo actual scala Try?
 

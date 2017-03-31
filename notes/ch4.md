@@ -50,7 +50,7 @@ never need modify existing functions to make them Option aware
 
 sequence and traverse
 
-for comps - sugar for flatmap and map
+for comps - sugar for flatMap and map
 
 `Between map, lift, sequence, traverse, map2, map3, and so on, you should never have to modify any existing functions to work with optional values`
 

@@ -1,11 +1,5 @@
 package net.nomadicalien
 
-import net.nomadicalien.lightning.totalFunctionExample.ValidDenominator
-
-import scala.util.Try
-import scalaz.\/
-
-
 object lightning {
 
   object nonRTExample {
@@ -41,6 +35,7 @@ object lightning {
   }
 
   object tryExample {
+    import scala.util.Try
 
     def divideFourBy(denominator: Int): Try[Int] =
       Try(4 / denominator)
@@ -131,7 +126,7 @@ object lightning {
     }
 
 
-
+    //keeps only one error because error type has no concept of accumulation
     implicit val errorSemiGroup = new Semigroup[DivisionError]{
       def append(f1: DivisionError, f2: => DivisionError): DivisionError = f1
     }
@@ -144,6 +139,29 @@ object lightning {
   }
 
 
+  object validationNelExample {
+    import scalaz._
+    import Scalaz._
+    import Validation._
 
+    sealed trait DivisionError
+    case object DivisionByZeroError extends DivisionError
+    case object ZeroResultError extends DivisionError
+
+    def divideFourBy(denominator: Int): Validation[DivisionError, Int] = {
+      if(denominator == 0)
+        DivisionByZeroError.failure[Int]
+      else if (denominator >= 4)
+        ZeroResultError.failure[Int]
+      else
+        (4 / denominator).success[DivisionError]
+    }
+
+
+    def combineResults(den1: Int, den2: Int): ValidationNel[DivisionError, Int] = {
+      (divideFourBy(den1).toValidationNel |@| divideFourBy(den2).toValidationNel)((a: Int, b: Int) => a + b)
+    }
+
+  }
 
 }

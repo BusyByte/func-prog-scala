@@ -92,53 +92,6 @@ trait Future[+T] extends Awaitable[T] {
 
   /* Callbacks */
 
-  /** When this future is completed successfully (i.e., with a value),
-    *  apply the provided partial function to the value if the partial function
-    *  is defined at that value.
-    *
-    *  If the future has already been completed with a value,
-    *  this will either be applied immediately or be scheduled asynchronously.
-    *
-    *  Note that the returned value of `pf` will be discarded.
-    *
-    *  $swallowsExceptions
-    *  $multipleCallbacks
-    *  $callbackInContext
-    *
-    * @group Callbacks
-    */
-  @deprecated("use `foreach` or `onComplete` instead (keep in mind that they take total rather than partial functions)", "2.12.0")
-  def onSuccess[U](pf: PartialFunction[T, U])(implicit executor: ExecutionContext): Unit = onComplete {
-    case Success(v) =>
-      pf.applyOrElse[T, Any](v, Predef.identity[T]) // Exploiting the cached function to avoid MatchError
-    case _ =>
-  }
-
-  /** When this future is completed with a failure (i.e., with a throwable),
-    *  apply the provided callback to the throwable.
-    *
-    *  $caughtThrowables
-    *
-    *  If the future has already been completed with a failure,
-    *  this will either be applied immediately or be scheduled asynchronously.
-    *
-    *  Will not be called in case that the future is completed with a value.
-    *
-    *  Note that the returned value of `pf` will be discarded.
-    *
-    *  $swallowsExceptions
-    *  $multipleCallbacks
-    *  $callbackInContext
-    *
-    * @group Callbacks
-    */
-  @deprecated("use `onComplete` or `failed.foreach` instead (keep in mind that they take total rather than partial functions)", "2.12.0")
-  def onFailure[U](@deprecatedName('callback) pf: PartialFunction[Throwable, U])(implicit executor: ExecutionContext): Unit = onComplete {
-    case Failure(t) =>
-      pf.applyOrElse[Throwable, Any](t, Predef.identity[Throwable]) // Exploiting the cached function to avoid MatchError
-    case _ =>
-  }
-
   /** When this future is completed, either through an exception, or a value,
     *  apply the provided function.
     *
@@ -155,7 +108,7 @@ trait Future[+T] extends Awaitable[T] {
     * @param f     the function to be executed when this `Future` completes
     * @group Callbacks
     */
-  def onComplete[U](@deprecatedName('func) f: Try[T] => U)(implicit executor: ExecutionContext): Unit
+  def onComplete[U](f: Try[T] => U)(implicit executor: ExecutionContext): Unit
 
 
   /* Miscellaneous */
@@ -325,7 +278,7 @@ trait Future[+T] extends Awaitable[T] {
     * @return    a `Future` which will hold the successful result of this `Future` if it matches the predicate or a `NoSuchElementException`
     * @group Transformations
     */
-  def filter(@deprecatedName('pred) p: T => Boolean)(implicit executor: ExecutionContext): Future[T] =
+  def filter(p: T => Boolean)(implicit executor: ExecutionContext): Future[T] =
     map { r => if (p(r)) r else throw new NoSuchElementException("Future.filter predicate is not satisfied") }
 
   /** Used by for-comprehensions.
@@ -573,8 +526,6 @@ object Future {
       throw new TimeoutException(s"Future timed out after [$atMost]")
     }
 
-    override def onSuccess[U](pf: PartialFunction[Nothing, U])(implicit executor: ExecutionContext): Unit = ()
-    override def onFailure[U](pf: PartialFunction[Throwable, U])(implicit executor: ExecutionContext): Unit = ()
     override def onComplete[U](f: Try[Nothing] => U)(implicit executor: ExecutionContext): Unit = ()
     override def isCompleted: Boolean = false
     override def value: Option[Try[Nothing]] = None
@@ -643,7 +594,7 @@ object Future {
     *  @param executor  the execution context on which the future is run
     *  @return          the `Future` holding the result of the computation
     */
-  def apply[T](body: =>T)(implicit @deprecatedName('execctx) executor: ExecutionContext): Future[T] =
+  def apply[T](body: =>T)(implicit executor: ExecutionContext): Future[T] =
     unit.map(_ => body)
 
   /** Simple version of `Future.traverse`. Asynchronously and non-blockingly transforms a `TraversableOnce[Future[A]]`
@@ -673,39 +624,6 @@ object Future {
     futures foreach { _ onComplete completeFirst }
     p.future
   }
-
-  /** Asynchronously and non-blockingly returns a `Future` that will hold the optional result
-    *  of the first `Future` with a result that matches the predicate.
-    *
-    * @tparam T        the type of the value in the future
-    * @param futures   the `TraversableOnce` of Futures to search
-    * @param p         the predicate which indicates if it's a match
-    * @return          the `Future` holding the optional result of the search
-    */
-  @deprecated("use the overloaded version of this method that takes a scala.collection.immutable.Iterable instead", "2.12.0")
-  def find[T](@deprecatedName('futurestravonce) futures: TraversableOnce[Future[T]])(@deprecatedName('predicate) p: T => Boolean)(implicit executor: ExecutionContext): Future[Option[T]] = {
-    val futuresBuffer = futures.toBuffer
-    if (futuresBuffer.isEmpty) successful[Option[T]](None)
-    else {
-      val result = Promise[Option[T]]()
-      val ref = new AtomicInteger(futuresBuffer.size)
-      val search: Try[T] => Unit = v => try {
-        v match {
-          case Success(r) if p(r) => result tryComplete Success(Some(r))
-          case _ =>
-        }
-      } finally {
-        if (ref.decrementAndGet == 0) {
-          result tryComplete Success(None)
-        }
-      }
-
-      futuresBuffer.foreach(_ onComplete search)
-
-      result.future
-    }
-  }
-
 
   /** Asynchronously and non-blockingly returns a `Future` that will hold the optional result
     *  of the first `Future` with a result that matches the predicate, failed `Future`s will be ignored.
@@ -751,48 +669,6 @@ object Future {
   private[this] def foldNext[T, R](i: Iterator[Future[T]], prevValue: R, op: (R, T) => R)(implicit executor: ExecutionContext): Future[R] =
     if (!i.hasNext) successful(prevValue)
     else i.next().flatMap { value => foldNext(i, op(prevValue, value), op) }
-
-  /** A non-blocking, asynchronous fold over the specified futures, with the start value of the given zero.
-    *  The fold is performed on the thread where the last future is completed,
-    *  the result will be the first failure of any of the futures, or any failure in the actual fold,
-    *  or the result of the fold.
-    *
-    *  Example:
-    *  {{{
-    *    val futureSum = Future.fold(futures)(0)(_ + _)
-    *  }}}
-    *
-    * @tparam T       the type of the value of the input Futures
-    * @tparam R       the type of the value of the returned `Future`
-    * @param futures  the `TraversableOnce` of Futures to be folded
-    * @param zero     the start value of the fold
-    * @param op       the fold operation to be applied to the zero and futures
-    * @return         the `Future` holding the result of the fold
-    */
-  @deprecated("use Future.foldLeft instead", "2.12.0")
-  def fold[T, R](futures: TraversableOnce[Future[T]])(zero: R)(@deprecatedName('foldFun) op: (R, T) => R)(implicit executor: ExecutionContext): Future[R] = {
-    if (futures.isEmpty) successful(zero)
-    else sequence(futures).map(_.foldLeft(zero)(op))
-  }
-
-  /** Initiates a non-blocking, asynchronous, fold over the supplied futures
-    *  where the fold-zero is the result value of the `Future` that's completed first.
-    *
-    *  Example:
-    *  {{{
-    *    val futureSum = Future.reduce(futures)(_ + _)
-    *  }}}
-    * @tparam T       the type of the value of the input Futures
-    * @tparam R       the type of the value of the returned `Future`
-    * @param futures  the `TraversableOnce` of Futures to be reduced
-    * @param op       the reduce operation which is applied to the results of the futures
-    * @return         the `Future` holding the result of the reduce
-    */
-  @deprecated("use Future.reduceLeft instead", "2.12.0")
-  def reduce[T, R >: T](futures: TraversableOnce[Future[T]])(op: (R, T) => R)(implicit executor: ExecutionContext): Future[R] = {
-    if (futures.isEmpty) failed(new NoSuchElementException("reduce attempted on empty collection"))
-    else sequence(futures).map(_ reduceLeft op)
-  }
 
   /** Initiates a non-blocking, asynchronous, left reduction over the supplied futures
     *  where the zero is the result value of the first `Future`.

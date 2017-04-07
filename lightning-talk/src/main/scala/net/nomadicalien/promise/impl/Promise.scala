@@ -1,7 +1,7 @@
 package net.nomadicalien.promise.impl
 
 import net.nomadicalien.promise._
-import scala.concurrent.{CanAwait, ExecutionContext, ExecutionException, OnCompleteRunnable, TimeoutException}
+import scala.concurrent.{ExecutionContext, ExecutionException, OnCompleteRunnable, TimeoutException}
 import net.nomadicalien.promise.Future.InternalCallbackExecutor
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.annotation.tailrec

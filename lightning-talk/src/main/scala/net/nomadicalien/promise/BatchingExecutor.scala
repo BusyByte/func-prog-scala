@@ -3,7 +3,6 @@ package net.nomadicalien.promise
 import java.util.concurrent.Executor
 
 import scala.annotation.tailrec
-import scala.concurrent.{BlockContext, CanAwait}
 
 /**
   * Mixin trait for an Executor

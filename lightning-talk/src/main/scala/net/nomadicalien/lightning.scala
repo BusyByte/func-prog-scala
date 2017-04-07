@@ -11,7 +11,6 @@ object lightning {
     }
   }
 
-
   object optionExample {
 
     def divideFourBy(denominator: Int): Option[Int] = { // Loose information about what error happened with Option
@@ -75,7 +74,6 @@ object lightning {
 
   }
 
-
   object totalFunctionExample {
     import scalaz._
     import Scalaz._
@@ -105,7 +103,6 @@ object lightning {
 
 
   }
-
 
   object validationExample {
     import scalaz._
@@ -137,7 +134,6 @@ object lightning {
     }
 
   }
-
 
   object validationNelExample {
     import scalaz._

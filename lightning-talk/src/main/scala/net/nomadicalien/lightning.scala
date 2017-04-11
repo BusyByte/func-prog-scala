@@ -82,9 +82,10 @@ object lightning {
     case object DivisionByZeroError extends DivisionError
     case object ZeroResultError extends DivisionError
 
-    final case class ValidDenominator private[totalFunctionExample] (denominator: Int) extends AnyVal
+    final class ValidDenominator private (val denominator: Int) extends AnyVal
 
 
+    // https://gist.github.com/tpolecat/a5cb0dc9adeacc93f846835ed21c92d2
     object ValidDenominator {
       def create(denominator: Int): DivisionError \/ ValidDenominator = {
         if(denominator == 0)
@@ -92,7 +93,7 @@ object lightning {
         else if (denominator >= 4)
           ZeroResultError.left
         else
-          ValidDenominator(denominator).right
+          new ValidDenominator(denominator).right
       }
     }
 
@@ -100,8 +101,6 @@ object lightning {
     def divideFourBy(validDenominator: ValidDenominator): Int = {
       4 / validDenominator.denominator
     }
-
-
   }
 
   object validationExample {

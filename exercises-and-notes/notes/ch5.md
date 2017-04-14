@@ -21,3 +21,16 @@ assign thunk to lazy val and use lazy val so it only gets evaluated once
 
 ### 5.2.2 Helper functions for inspecting streams
 
+## 5.3 Separating program description from evaluation
+
+`separation of concerns`
+
+separate the `description of computations` from `actually running them`
+
+`incremental` nature
+
+## 5.4 Infinite streams and corecursion
+
+`infinite streams`
+
+careful on `stack-safe` or `never terminate`

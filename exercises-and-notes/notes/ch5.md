@@ -15,7 +15,7 @@ zero arg function
 
 `lazy lists` or `streams`
 
-### 5.2.1 Memoizing streams and avoiding recomputation
+### 5.2.1 Memoizing streams and avoiding re-computation
 
 assign thunk to lazy val and use lazy val so it only gets evaluated once
 

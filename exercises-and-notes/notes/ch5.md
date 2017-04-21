@@ -29,8 +29,17 @@ separate the `description of computations` from `actually running them`
 
 `incremental` nature
 
-## 5.4 Infinite streams and corecursion
+## 5.4 Infinite streams and co-recursion
 
 `infinite streams`
 
 careful on `stack-safe` or `never terminate`
+
+
+scanRight can not use unfold because it has no concept of intermediate result on interface?
+
+## 5.5 Summary
+
+efficiency with FP
+
+improve modularity by separating the description of an expression from the how-and-when of its evaluation

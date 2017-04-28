@@ -1,5 +1,6 @@
 package net.nomadicalien.ch6
 
+import scala.annotation.tailrec
 
 
 trait RNG {
@@ -62,11 +63,12 @@ object RNG {
   }
 
   def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+    @tailrec
     def i(cnt: Int)(r: RNG)(acc: List[Int]): (List[Int], RNG) = {
       if (cnt == 0) {
         (acc, r)
       } else {
-        val (nextRndInt, nextRng) = nonNegativeInt(r)
+        val (nextRndInt, nextRng) = nonNegativeInt(r)//TODO: ints not positive ones
         i(cnt - 1)(nextRng)(nextRndInt :: acc)
       }
     }

@@ -29,3 +29,13 @@ lift
 ### 7.4.1 The law of mapping
 
 identity law
+
+### 7.4.2 The law of forking
+
+### 7.4.3 Breaking the law: a subtle bug
+
+deadlocks
+
+### 7.4.4 A fully non-blocking Par implementation using actors
+
+## 7.5 Refining combinators to their most general form

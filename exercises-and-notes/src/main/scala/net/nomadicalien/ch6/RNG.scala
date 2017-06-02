@@ -106,7 +106,9 @@ object RNG {
     sequence(List.fill(count)(r => r.nextInt))
 
   def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] = { rng =>
-    val (a: A, nextRng: RNG) = f(rng)
+    val r = f(rng)
+    val a: A = r._1
+    val nextRng: RNG = r._2
     g(a)(nextRng)
   }
 
@@ -127,7 +129,10 @@ object RNG {
   def mapTwo[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
     flatMap(ra)(a => map(rb)(b => f(a, b)))
 
-  def boolean(rng: RNG): (Boolean, RNG) =
-    rng.nextInt match { case (i,rng2) => (i%2==0,rng2) }
-
+  def boolean(rng: RNG): (Boolean, RNG) = {
+    val nextPair = rng.nextInt
+    val nextInt = nextPair._1
+    val updatedRNG = nextPair._2
+    (nextInt % 2 == 0, updatedRNG)
+  }
 }

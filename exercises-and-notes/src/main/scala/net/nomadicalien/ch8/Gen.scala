@@ -248,6 +248,15 @@ object Gen {
 
   // Exercise 8.17
   lazy val forkProp = forAllPar(pint2)(i => equal(Par.fork(i), i)) tag "fork"
+
+
+  // Exercise 8.18
+  lazy val isEven = (i: Int) => i%2 == 0
+  lazy val takeWhileProp =
+    Prop.forAll(Gen.listOf(Gen.choose(0, 100)))(ns => ns.takeWhile(isEven).forall(isEven))
+
+  lazy val takeWhileDropWhileProp =
+    Prop.forAll(Gen.listOf(Gen.choose(0, 100)))(ns => ns.takeWhile(isEven).dropWhile(isEven).isEmpty)
 }
 
 object ** {

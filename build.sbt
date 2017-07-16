@@ -22,6 +22,9 @@ lazy val `exercises-and-notes` = (project in file("exercises-and-notes"))
   .settings(
     name := "func-prog-scala-exercises-and-notes"
   )
+  .settings(libraryDependencies ++= Seq(
+    "org.scalacheck" %% "scalacheck" % "1.13.4"
+  ))
 
 lazy val `lightning-talk` = (project in file("lightning-talk"))
   .settings(commonSettings: _*)

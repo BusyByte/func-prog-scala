@@ -14,3 +14,5 @@
 
 ### 9.2.1 Slicing and nonempty repetition
 
+Exercise 9.5 It seems like overkill to introduce something like Par/Future/Task or actors
+

@@ -16,3 +16,6 @@
 
 Exercise 9.5 It seems like overkill to introduce something like Par/Future/Task or actors
 
+## 9.3 Handling context sensitivity
+
+## 9.4 Writing a JSON parser

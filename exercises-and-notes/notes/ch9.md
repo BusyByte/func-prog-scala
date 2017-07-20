@@ -31,3 +31,12 @@ Exercise 9.5 It seems like overkill to introduce something like Par/Future/Task 
 ### 9.5.2 Error nesting   
 
 ### 9.5.3 Controlling branching and backtracking
+
+Exercise 9.11 It seems like the parser index or the order in the chain of parsers might be helpful 
+if there are multiple patterns with slight differences
+
+## 9.6 Implementing the algebra
+
+### 9.6.1 One possible implementation
+
+## 9.6.2 Sequencing parsers

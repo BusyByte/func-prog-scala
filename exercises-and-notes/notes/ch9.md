@@ -19,3 +19,15 @@ Exercise 9.5 It seems like overkill to introduce something like Par/Future/Task 
 ## 9.3 Handling context sensitivity
 
 ## 9.4 Writing a JSON parser
+
+### 9.4.1 The JSON format
+
+### 9.4.2 A JSON parser
+
+## 9.5 Error Reporting
+
+### 9.5.1 A possible design
+
+### 9.5.2 Error nesting   
+
+### 9.5.3 Controlling branching and backtracking

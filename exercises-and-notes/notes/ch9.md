@@ -43,4 +43,8 @@ if there are multiple patterns with slight differences
 
 ### 9.6.3 Labeling parsers
 
+### 9.6.4 Failover and backtracking
+
+### 9.6.5 Context-sensitive parsing
+
 

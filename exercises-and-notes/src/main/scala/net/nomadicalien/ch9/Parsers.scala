@@ -38,11 +38,13 @@ trait Result[+A] {
 case class Success[+A](get: A, charsConsumed: Int) extends Result[A]
 case class Failure(get: ParseError, isCommitted: Boolean) extends Result[Nothing]
 
-case class ParseError(stack: List[(Location,String)]) {
+case class ParseError(stack: List[(Location,String)] = List(), otherFailures: List[ParseError] = List()) {
   def push(loc: Location, msg: String): ParseError = copy(stack = (loc,msg) :: stack)
   def label[A](s: String): ParseError = ParseError(latestLoc.map((_,s)).toList)
   def latestLoc: Option[Location] = latest map (_._1)
   def latest: Option[(Location,String)] = stack.lastOption
+  def addFailure(e: ParseError): ParseError =
+    this.copy(otherFailures = e :: this.otherFailures)
 }
 
 object Show {
@@ -54,7 +56,11 @@ object Show {
   object Implicits {
     implicit object ShowParseError extends Show[ParseError] {
       def show(parseError: ParseError): String = {
-        val grouped: Map[Location, List[(Location, String)]] = parseError.stack.groupBy(_._1)
+        val combinedStacks = parseError.otherFailures.foldLeft(parseError.stack) {
+          (acc, err) =>
+            acc ++ err.stack
+        }
+        val grouped: Map[Location, List[(Location, String)]] = combinedStacks.groupBy(_._1)
         val ordered = grouped.toList.sortBy(_._1.offset)
         val simplified: List[(Location, List[String])] = ordered.map(p => (p._1, p._2.map(_._2)))
         simplified.foldLeft("") {
@@ -197,7 +203,7 @@ object Exercise9_13 {
     def scope[A](msg: String)(p: Parser[A]): Parser[A] = s => p(s).mapError(_.push(s, msg))
 
     def or[A](x: Parser[A], y: => Parser[A]): Parser[A] = s => x(s) match {
-      case Failure(e, false) => y(s)
+      case Failure(e, false) => y(s).mapError(_.addFailure(e))
       case r => r
     }
 

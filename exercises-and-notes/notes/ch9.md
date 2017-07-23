@@ -47,4 +47,6 @@ if there are multiple patterns with slight differences
 
 ### 9.6.5 Context-sensitive parsing
 
+## 9.7 Summary
 
+`algebraic design`

@@ -40,3 +40,7 @@ if there are multiple patterns with slight differences
 ### 9.6.1 One possible implementation
 
 ## 9.6.2 Sequencing parsers
+
+### 9.6.3 Labeling parsers
+
+

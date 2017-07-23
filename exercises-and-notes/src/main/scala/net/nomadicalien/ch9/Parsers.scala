@@ -1,12 +1,24 @@
 package net.nomadicalien.ch9
 
-import net.nomadicalien.ch9.Example1.Location
 import org.scalacheck.Properties
 
 import scala.util.matching.Regex
 
+case class Location(input: String, offset: Int = 0) {
+  lazy val line = input.slice(0,offset+1).count(_ == '\n') + 1
+  lazy val col = input.slice(0,offset+1).lastIndexOf('\n') match {
+    case -1 => offset + 1
+    case lineStart => offset - lineStart }
+}
 
-trait Parsers[ParseError, Parser[+_]] { self =>
+case class ParseError(stack: List[(Location,String)]) {
+  def push(loc: Location, msg: String): ParseError = copy(stack = (loc,msg) :: stack)
+  def label[A](s: String): ParseError = ParseError(latestLoc.map((_,s)).toList)
+  def latestLoc: Option[Location] = latest map (_._1)
+  def latest: Option[(Location,String)] = stack.lastOption
+}
+
+trait Parsers[Parser[+_]] { self =>
   def run[A](p: Parser[A])(input: String): Either[ParseError,A]
   def char(c: Char): Parser[Char] = string(c.toString) map (_.charAt(0))
   implicit def string(s: String): Parser[String]
@@ -45,7 +57,9 @@ trait Parsers[ParseError, Parser[+_]] { self =>
 
   implicit def regex(r: Regex): Parser[String]
 
+  def label[A](msg: String)(p: Parser[A]): Parser[A]
 
+  def scope[A](msg: String)(p: Parser[A]): Parser[A]
 
   case class ParserOps[A](p: Parser[A]) {
     def |[B>:A](p2: => Parser[B]): Parser[B] = self.or(p,p2)
@@ -75,7 +89,8 @@ object JSON {
   case class JNumber(get: Double) extends JSON
   case class JString(get: String) extends JSON
   case class JBool(get: Boolean) extends JSON
-  case class JArray(get: IndexedSeq[JSON]) extends JSON case class JObject(get: Map[String, JSON]) extends JSON
+  case class JArray(get: IndexedSeq[JSON]) extends JSON
+  case class JObject(get: Map[String, JSON]) extends JSON
 }
 
 
@@ -84,34 +99,32 @@ object JSON {
   */
 object Exercise9_13 {
 
-  case class Location(input: String, offset: Int = 0) {
-    lazy val line = input.slice(0,offset+1).count(_ == '\n') + 1
-    lazy val col = input.slice(0,offset+1).lastIndexOf('\n') match {
-      case -1 => offset + 1
-      case lineStart => offset - lineStart }
-  }
-
-  type ParseError = String
   type Parser[+A] = Location => Result[A] //that’s either a success or a failure.
-  trait Result[+A]
+  trait Result[+A] {
+    def mapError(f: ParseError => ParseError): Result[A] =
+      this match {
+        case Failure(e) => Failure(f(e))
+        case _ => this
+      }
+  }
   case class Success[+A](get: A, charsConsumed: Int) extends Result[A]
   case class Failure(get: ParseError) extends Result[Nothing]
 
-  object Example1Parsers extends Parsers[ParseError, Parser] {
+  object Example1Parsers extends Parsers[Parser] {
     implicit def string(s: String): Parser[String] =
-    { loc: Location =>
+    scope(s"Parsing string $s")({ loc: Location =>
       val subStr = loc.input.substring(loc.offset)
       if(subStr.contains(s)) {
         Success(s, s.length)
       } else {
-        Failure(s"$subStr does not contain $s")
+        Failure(ParseError(List((loc, s"$subStr does not contain $s"))))
       }
-    }
+    })
     implicit def regex(r: Regex): Parser[String] =  {
       loc: Location =>
       val subStr = loc.input.substring(loc.offset)
         r.findFirstMatchIn(subStr)
-          .fold[Result[String]](Failure(s"$subStr does not contain ${r.pattern.pattern()}")) { regExMatch =>
+          .fold[Result[String]](Failure(ParseError(List((loc, s"$subStr does not contain ${r.pattern.pattern()}"))))) { regExMatch =>
              Success(regExMatch.source.subSequence(regExMatch.start, regExMatch.end).toString,regExMatch.end - regExMatch.start)
           }
 
@@ -128,6 +141,10 @@ object Exercise9_13 {
         case f: Failure => f
       }
     }
+
+
+    def label[A](msg: String)(p: Parser[A]): Parser[A] = s => p(s).mapError(_.label(msg))
+    def scope[A](msg: String)(p: Parser[A]): Parser[A] = s => p(s).mapError(_.push(s, msg))
 
     def run[A](p: Parser[A])(input: String): Either[ParseError, A] = ???
     def orString(s1: String, s2: String): Parser[String] = ???

@@ -1,6 +1,6 @@
 package net.nomadicalien.ch9
 
-import org.scalacheck.Properties
+import org.scalacheck.{Arbitrary, Properties}
 
 import scala.util.matching.Regex
 
@@ -134,7 +134,7 @@ trait Parsers[Parser[+_]] { self =>
     def **[B>:A](p2: =>Parser[B]): Parser[(A,B)] = self.product(p,p2)
   }
 
-  class Laws[+A] extends Properties("Parser"){
+  class Laws[+A](implicit ev: Arbitrary[Parser[A]]) extends Properties("Parser"){
     import org.scalacheck.Prop.forAll
     property("equal") = forAll { (p1: Parser[A], p2: Parser[A], s: String) =>
         run(p1)(s) == run(p2)(s)

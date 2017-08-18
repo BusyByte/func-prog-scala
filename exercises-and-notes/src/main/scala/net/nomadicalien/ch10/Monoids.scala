@@ -73,7 +73,14 @@ object Monoids {
     }
 
 
-    def countViaFold(phrase: String) = foldMapV(phrase.toIndexedSeq, wcMonoid)(c => WordCount(c.toString))
+    def countViaFold(phrase: String): Int = {
+      val result = foldMapV(phrase.toIndexedSeq, wcMonoid)(c => WordCount(c.toString))
+      result match {
+        case Stub(c) => if (c.trim.isEmpty) 0 else 1
+        case Part(_, countOfWords, _) => countOfWords
+      }
+    }
+
   }
 
 

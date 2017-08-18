@@ -64,11 +64,16 @@ object Monoids {
   }
 
   object WordCount {
+
     def countWords(phrase: String) = phrase.trim.replaceAll("""^[\w ]"""", "").split(' ').length
 
-    def splitString(str: String): IndexedSeq[WordCount] = ???
+    def apply(chars: String): WordCount = {
+      if (chars.trim.isEmpty) Part("", 0, "")
+      else Stub(chars)
+    }
 
-    def countViaFold(phrase: String) = ???
+
+    def countViaFold(phrase: String) = foldMapV(phrase.toIndexedSeq, wcMonoid)(c => WordCount(c.toString))
   }
 
 

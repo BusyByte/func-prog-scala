@@ -4,10 +4,11 @@ lazy val specs2Version                = "3.8.8"
 
 lazy val commonSettings = Seq(
   organization := "net.nomadicalien",
-  scalaVersion := "2.12.1",
+  scalaVersion := "2.12.3",
   version := "2.0.0-SNAPSHOT",
   libraryDependencies ++= Seq(
-    "org.specs2" %% "specs2-core" % specs2Version % Test
+    "org.specs2" %% "specs2-core" % specs2Version % Test,
+    "org.specs2" %% "specs2-scalacheck" % specs2Version % Test
   ),
   scalacOptions in Test ++= Seq("-Yrangepos")
 )

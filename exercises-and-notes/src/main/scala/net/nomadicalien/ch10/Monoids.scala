@@ -41,6 +41,11 @@ object Monoids {
   // Part(lorem 0 ips) , Part(um 0 do)
 
   import WordCount._
+
+  def oneIfNotEmpty(s: String): Int = {
+    if(s.trim.isEmpty) 0 else 1
+  }
+
   val wcMonoid = new Monoid[WordCount] {
     def op(a1: WordCount, a2: WordCount): WordCount = (a1, a2) match {
       case (Stub(a), Stub(b)) =>  Stub(a + b)
@@ -49,14 +54,10 @@ object Monoids {
         Part(l1, leftWordCount + rightWordCount + middleCount , r2)
 
       case (Stub(a), Part(l, wordCount, r)) =>
-        val left = a + l
-        val countLeft = countWords(left)
-        Part(left, wordCount + countLeft, r)
+        Part(a + l, wordCount, r)
 
       case (Part(l, wordCount, r), Stub(a)) =>
-        val right = r + a
-        val countRight = countWords(right)
-        Part(l, wordCount + countRight, r + a)
+        Part(l, wordCount, r + a)
 
     }
 
@@ -66,10 +67,11 @@ object Monoids {
   object WordCount {
 
     def countWords(phrase: String) = {
-      val words = phrase.replaceAll("""[^\w ]"""", "").trim
+      val words = phrase.replaceAll("""[^\w ]""", "").trim
        if(words.isEmpty) {
          0
        } else {
+         println(words)
          words.split(' ').length
        }
 
@@ -82,11 +84,13 @@ object Monoids {
     }
 
 
+
+
     def countViaFold(phrase: String): Int = {
       val result = foldMapV(phrase.toIndexedSeq, wcMonoid)(c => WordCount(c.toString))
       result match {
-        case Stub(c) => if (c.trim.isEmpty) 0 else 1
-        case Part(_, countOfWords, _) => countOfWords
+        case Stub(c) => countWords(c)
+        case Part(s1, countOfWords, s2) => oneIfNotEmpty(s1) + countOfWords + oneIfNotEmpty(s2)
       }
     }
 

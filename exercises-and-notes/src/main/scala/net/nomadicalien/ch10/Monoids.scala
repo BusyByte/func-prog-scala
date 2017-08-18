@@ -65,7 +65,7 @@ object Monoids {
 
   object WordCount {
 
-    def countWords(phrase: String) = phrase.trim.replaceAll("""^[\w ]"""", "").split(' ').length
+    def countWords(phrase: String) = phrase.trim.replaceAll("""[^\w ]"""", "").split(' ').length
 
     def apply(chars: String): WordCount = {
       if (chars.trim.isEmpty) Part("", 0, "")

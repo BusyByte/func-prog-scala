@@ -1,4 +1,4 @@
-package net.nomadicalien.ch9
+package net.nomadicalien.ch10
 
 import org.scalacheck.{Arbitrary, Gen}
 import org.specs2.ScalaCheck

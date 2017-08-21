@@ -24,6 +24,7 @@ object Monoids {
 
   // 10.8 10.9 Hard - skipping
 
+
  // Write a monoid instance for WC and make sure that it meets the monoid laws. val wcMonoid: Monoid[WC]
 
   sealed trait WordCount
@@ -46,6 +47,9 @@ object Monoids {
     if(s.trim.isEmpty) 0 else 1
   }
 
+  /**
+    * Exercise 10.10
+    */
   val wcMonoid = new Monoid[WordCount] {
     def op(a1: WordCount, a2: WordCount): WordCount = (a1, a2) match {
       case (Stub(a), Stub(b)) =>  Stub(a + b)
@@ -71,8 +75,7 @@ object Monoids {
        if(words.isEmpty) {
          0
        } else {
-         println(words)
-         words.split(' ').length
+         words.split("""\s+""").length
        }
 
     }
@@ -84,8 +87,9 @@ object Monoids {
     }
 
 
-
-
+    /**
+      * Exercise 10.11
+      */
     def countViaFold(phrase: String): Int = {
       val result = foldMapV(phrase.toIndexedSeq, wcMonoid)(c => WordCount(c.toString))
       result match {

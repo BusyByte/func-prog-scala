@@ -8,6 +8,9 @@ import org.specs2.mutable.Specification
 case class Word(w: String) extends AnyVal
 
 object ArbitraryPhrase {
+    /**
+      * Source https://en.wikipedia.org/wiki/Most_common_words_in_English
+      * */
     implicit def arbWord: Arbitrary[Word] =
         Arbitrary(
             Gen.oneOf(
